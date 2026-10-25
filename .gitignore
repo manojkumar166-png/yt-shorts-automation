@@ -3,3 +3,5 @@
 background/
 audio/
 output/
+.env
+__pycache__/

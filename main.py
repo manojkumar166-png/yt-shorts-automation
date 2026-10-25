@@ -15,17 +15,15 @@ MAX_FAILS = 3
 def load_state():
     if STATE_FILE.exists():
         try:
-            # Try to read the file
             return json.loads(STATE_FILE.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
-            # If the file is corrupted, recreate it from scratch
-            print("  [State] state.json is corrupted. Creating a fresh one.")
+            print("  [State] state.json is corrupted. Recreating...")
+            STATE_FILE.unlink() # Delete the corrupted file
             return {"done": [], "failed": {}, "log": []}
     return {"done": [], "failed": {}, "log": []}
 
 def save_state(s):
     try:
-        # Write to a temp file, then replace, so it never gets half-written
         fd, tmp = tempfile.mkstemp(dir=".")
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             json.dump(s, f, indent=2, ensure_ascii=False)

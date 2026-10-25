@@ -1,0 +1,35 @@
+[
+  {
+    "hook": "A black hole can literally swallow entire galaxies whole.",
+    "facts": [
+      "At a black hole's center, time completely stops existing.",
+      "The closest known black hole is just 1,560 light-years from Earth.",
+      "Supermassive black holes can weigh billions of times more than our Sun."
+    ],
+    "image_queries": [
+      "black hole singularity stopping time abstract",
+      "Gaia BH1 black hole milky way space",
+      "supermassive black hole devouring star galaxy"
+    ],
+    "id": 8940,
+    "topic": "black holes",
+    "used": true
+  },
+  {
+    "hook": "A black hole the size of an atom could destroy Earth.",
+    "facts": [
+      "Black holes don't suck matter; objects fall into them due to extreme gravity.",
+      "Time slows down near a black hole's event horizon relative to distant observers.",
+      "The closest known black hole to Earth is Gaia BH1, just 1,560 light-years away."
+    ],
+    "image_queries": [
+      "microscopic black hole Earth destruction render",
+      "black hole gravitational pull 3d animation",
+      "time dilation near black hole event horizon visual",
+      "Gaia BH1 black hole deep space illustration"
+    ],
+    "id": 8723,
+    "topic": "black holes",
+    "used": true
+  }
+]

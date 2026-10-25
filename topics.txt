@@ -1,6 +1,149 @@
-# One topic per line. Lines starting with # are ignored.
-# Edit this file on GitHub → auto-triggers a new video.
-
-black holes
-why cats purr
-ancient rome secrets
+What would happen if you fell into a black hole
+Why Venus spins backwards
+Why space is completely silent
+A day on Venus is longer than its year
+The Voyager golden record
+Neutron stars: a teaspoon weighs billions of tons
+The Great Red Spot of Jupiter
+Why Saturn's rings are disappearing
+Olympus Mons, the tallest volcano in the solar system
+The Fermi paradox: where is everybody
+What is dark matter
+The Wow! signal
+Europa's hidden ocean
+How astronauts sleep in space
+The Pale Blue Dot photograph
+What happens to a human body in the vacuum of space
+The Great Attractor
+Titan, the moon with lakes of methane
+The Apollo 13 rescue
+Why we always see the same side of the Moon
+The biggest known stars
+Rogue planets drifting without a sun
+The Oort Cloud
+Why Pluto lost its planet status
+The Hubble Deep Field
+The Library of Alexandria
+Cleopatra lived closer to the Moon landing than to the pyramids
+Pompeii's final hours
+Roman concrete that still stands
+The Dancing Plague of 1518
+The Trojan Horse: myth or reality
+The lost colony of Roanoke
+Genghis Khan's empire
+The Black Death
+The Terracotta Army
+How the Titanic really sank
+The Rosetta Stone
+The Antikythera mechanism
+The Great Wall of China
+Vikings in America
+The Hanging Gardens of Babylon
+The Gunpowder Plot
+Tutankhamun's tomb and the curse
+The Year Without a Summer
+The Battle of Thermopylae
+Roman gladiators
+The fall of Constantinople
+The Spanish Flu
+The Silk Road
+Machu Picchu and the Inca
+The Great Emu War
+The Dunning-Kruger effect
+Why you can't tickle yourself
+The Mandela effect
+The bystander effect
+Cognitive dissonance
+The Stanford prison experiment
+Why we get déjà vu
+The placebo effect
+The Baader-Meinhof phenomenon
+Why your brain loves cliffhangers
+The spotlight effect
+Imposter syndrome
+The halo effect
+The cocktail party effect
+The psychology of colors
+The sunk cost fallacy
+Why we procrastinate
+The Pygmalion effect
+Confirmation bias
+The mere exposure effect
+Why we dream
+Hedonic adaptation
+The IKEA effect
+The paradox of choice
+How first impressions form in seconds
+The Bermuda Triangle
+The Voynich Manuscript
+The Tunguska event
+The disappearance of Amelia Earhart
+The Mary Celeste ghost ship
+The Dyatlov Pass incident
+Who was Jack the Ripper
+The Nazca Lines
+Stonehenge
+The Zodiac Killer ciphers
+The Taos Hum
+D.B. Cooper
+The Oak Island Money Pit
+The Easter Island statues
+Göbekli Tepe
+The Piri Reis map
+The Flannan Isles lighthouse mystery
+The legend of Atlantis
+The Kryptos sculpture
+The Somerton Man
+The Bloop sound
+How the Great Pyramid was built
+The Shroud of Turin
+The Loch Ness Monster
+The Hessdalen lights
+The Beale ciphers
+Quantum entanglement
+Schrödinger's cat
+Hawking radiation
+The double-slit experiment
+Why the sky is blue
+Time dilation
+What is entropy
+Superconductors
+How lightning forms
+Why nothing can travel faster than light
+The Big Bang
+Why ice floats
+Antimatter
+The Fibonacci sequence in nature
+How vaccines work
+DNA: the code of life
+CRISPR gene editing
+How magnets work
+The Mpemba effect
+Where gold comes from
+Absolute zero
+How plants communicate
+Bioluminescence
+The ozone layer
+Why the ocean is salty
+Octopus intelligence
+Tardigrades, the indestructible animal
+The immortal jellyfish
+How crows solve puzzles
+The mantis shrimp's super vision
+Why elephants never forget
+The Mariana Trench
+Deep-sea creatures
+Why we have fingerprints
+How your heart works
+The human gut microbiome
+Why yawning is contagious
+How the internet works
+How GPS works
+How AI learns
+How a microchip is made
+The first computer bug
+Why Antarctica has no polar bears
+The Amazon rainforest
+The Sahara was once green
+Giant sequoia trees
+The Great Barrier Reef

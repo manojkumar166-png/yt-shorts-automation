@@ -1,123 +1,85 @@
-"""
-CreateVideo.py - Modern MoviePy version
-Creates vertical 9:16 video with text overlay and audio
-No YouTube upload code
-"""
-
+"""Vertical 1080x1920 video with text overlays + voiceover."""
 import os
 import random
 from moviepy.editor import (
-    VideoFileClip, AudioFileClip, 
-    TextClip, CompositeVideoClip, 
-    concatenate_audioclips, ColorClip
+    VideoFileClip, AudioFileClip, TextClip, CompositeVideoClip,
+    ColorClip, CompositeAudioClip,
 )
 
-def get_background_video():
-    """Get random background video from /background folder, or create solid color if not found"""
-    bg_folder = "background"
-    if os.path.exists(bg_folder):
-        files = [f for f in os.listdir(bg_folder) if f.endswith(('.mp4', '.mov', '.avi'))]
-        if files:
-            return os.path.join(bg_folder, random.choice(files))
-    
-    # Fallback: create a gradient-like solid color video if no background
-    print("  No background video found in /background - using solid color")
-    return None
+TARGET_W, TARGET_H = 1080, 1920
+GAP = 0.4
+
+
+def _pick_background():
+    os.makedirs("background", exist_ok=True)
+    files = [
+        os.path.join("background", f)
+        for f in os.listdir("background")
+        if f.lower().endswith((".mp4", ".mov", ".avi", ".mkv"))
+    ]
+    return random.choice(files) if files else None
+
+
+def _safe_textclip(text, size, **extra):
+    common = dict(fontsize=size, color="white", method="caption",
+                  size=(900, None), align="center",
+                  stroke_color="black", stroke_width=3)
+    common.update(extra)
+    for font in ("DejaVu-Sans-Bold", "Arial-Bold", "Arial"):
+        try:
+            return TextClip(text, font=font, **common)
+        except Exception:
+            continue
+    return TextClip(text, **common)
+
 
 def create_video(texts, audio_files, output_path, topic=""):
-    """
-    texts: list of 3 facts
-    audio_files: list of mp3 paths
-    output_path: where to save final mp4
-    """
-    # Load audios and get total duration
-    audio_clips = [AudioFileClip(a) for a in audio_files]
-    total_duration = sum([a.duration for a in audio_clips])
-    total_duration += 1.5 # padding
+    audio_clips = [AudioFileClip(p) for p in audio_files]
 
-    # Add small silence between facts
-    from moviepy.audio.AudioClip import CompositeAudioClip
-    # Concatenate with small gaps
-    current_time = 0
-    positioned_audios = []
+    starts, t = [], 0.0
     for clip in audio_clips:
-        positioned_audios.append(clip.set_start(current_time))
-        current_time += clip.duration + 0.5
-    
-    final_audio = CompositeAudioClip(positioned_audios).set_duration(total_duration)
+        starts.append(t)
+        t += clip.duration + GAP
+    total = t + 0.5
 
-    # Background
-    bg_path = get_background_video()
-    if bg_path:
-        video = VideoFileClip(bg_path).subclip(0, total_duration)
-        # Make it vertical 9:16 - crop center
-        w, h = video.size
-        target_w, target_h = 1080, 1920
-        # Resize to cover
-        video = video.resize(height=target_h)
-        # Crop width to 1080 centered
-        video = video.crop(x_center=video.w/2, width=target_w, height=target_h)
+    final_audio = CompositeAudioClip(
+        [c.set_start(s) for c, s in zip(audio_clips, starts)]
+    ).set_duration(total)
+
+    bg = _pick_background()
+    if bg:
+        print(f"  background: {os.path.basename(bg)}")
+        base = VideoFileClip(bg)
+        video = base.subclip(0, min(total, base.duration))
+        video = video.resize(height=TARGET_H)
+        if video.w < TARGET_W:
+            video = video.resize(width=TARGET_W)
+        video = video.crop(x_center=video.w/2, y_center=video.h/2,
+                           width=TARGET_W, height=TARGET_H)
     else:
-        # Solid background
-        video = ColorClip(size=(1080, 1920), color=(10, 10, 25), duration=total_duration)
-
+        print("  background: solid color (add .mp4 to /background)")
+        video = ColorClip((TARGET_W, TARGET_H), color=(10, 12, 30), duration=total)
     video = video.set_audio(final_audio)
 
-    # Create text clips for each fact, timed with audio
-    txt_clips = []
-    current_time = 0
-    for i, (text, audio_clip) in enumerate(zip(texts, audio_clips)):
-        # Create text clip - modern moviepy uses method with TextClip
-        try:
-            txt = TextClip(
-                text, 
-                fontsize=70, 
-                color='white', 
-                font='Arial-Bold',
-                stroke_color='black',
-                stroke_width=2,
-                method='caption',
-                size=(900, None),
-                align='center'
-            ).set_duration(audio_clip.duration).set_start(current_time).set_position(('center', 900))
-        except:
-            # Fallback without font specification
-            txt = TextClip(
-                text, 
-                fontsize=60, 
-                color='white',
-                method='caption',
-                size=(900, None)
-            ).set_duration(audio_clip.duration).set_start(current_time).set_position(('center', 900))
-        
-        txt_clips.append(txt)
-        current_time += audio_clip.duration + 0.5
+    overlays = []
+    for text, clip, start in zip(texts, audio_clips, starts):
+        tc = (_safe_textclip(text, 72)
+              .set_duration(clip.duration)
+              .set_start(start)
+              .set_position(("center", 950)))
+        overlays.append(tc)
 
-    # Title clip for topic
-    title = TextClip(
-        topic.upper(), 
-        fontsize=50, 
-        color='yellow', 
-        font='Arial-Bold',
-        method='label'
-    ).set_duration(2).set_position(('center', 200))
+    if topic:
+        title = (_safe_textclip(topic.upper(), 58, color="yellow", method="label")
+                 .set_duration(min(3, total))
+                 .set_position(("center", 220)))
+        overlays.append(title)
 
-    final = CompositeVideoClip([video] + txt_clips + [title])
-    final = final.set_duration(total_duration)
+    final = CompositeVideoClip([video] + overlays).set_duration(total)
+    final.write_videofile(output_path, fps=24, codec="libx264",
+                          audio_codec="aac", preset="medium", threads=4, logger="bar")
 
-    # Write
-    final.write_videofile(
-        output_path, 
-        fps=24, 
-        codec='libx264', 
-        audio_codec='aac',
-        threads=4,
-        logger='bar'
-    )
-
-    # Cleanup
     video.close()
     for c in audio_clips:
         c.close()
-
     return output_path

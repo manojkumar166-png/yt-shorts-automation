@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Generated files (don't commit — they're big)
+audio/*.mp3
+output/*.mp4
+*.mp4
+
+# Keep folder structure
+!background/.gitkeep
+!audio/.gitkeep
+!output/.gitkeep
+
+# Env
+.env
+
+# OS junk
+.DS_Store
+Thumbs.db

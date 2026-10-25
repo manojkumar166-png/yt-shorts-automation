@@ -1,43 +1,31 @@
-"""
-audio.py - Free TTS version
-Uses edge-tts (free, better than gTTS) with fallback to gTTS
-"""
-
+"""Free TTS: Edge-TTS primary, gTTS fallback."""
 import os
 import asyncio
 
-async def _edge_tts_save(text, output_path):
+
+async def _edge_save(text, path):
     import edge_tts
-    # Using good natural voice
-    communicate = edge_tts.Communicate(text, "en-US-ChristopherNeural")
-    await communicate.save(output_path)
+    communicate = edge_tts.Communicate(text, "en-US-ChristopherNeural", rate="+10%")
+    await communicate.save(path)
+
+
+async def _edge_all(texts, paths):
+    await asyncio.gather(*(_edge_save(t, p) for t, p in zip(texts, paths)))
+
 
 def generate_audios(texts):
-    """
-    texts: list of 3 facts
-    returns: list of audio file paths
-    """
     os.makedirs("audio", exist_ok=True)
-    audio_files = []
+    paths = [os.path.join("audio", f"fact_{i}.mp3") for i in range(len(texts))]
 
-    for i, text in enumerate(texts):
-        output = f"audio/fact_{i}.mp3"
-        try:
-            # Try edge-tts first (free, better quality)
-            asyncio.run(_edge_tts_save(text, output))
-            print(f"  Created {output} with Edge-TTS")
-        except Exception as e:
-            print(f"  Edge-TTS failed ({e}), falling back to gTTS")
-            try:
-                from gtts import gTTS
-                tts = gTTS(text=text, lang='en')
-                tts.save(output)
-            except Exception as e2:
-                print(f"  gTTS also failed: {e2}")
-                raise
-        audio_files.append(output)
+    try:
+        asyncio.run(_edge_all(texts, paths))
+        print(f"  Edge-TTS OK ({len(paths)} files)")
+        return paths
+    except Exception as e:
+        print(f"  Edge-TTS failed: {e} - falling back to gTTS")
 
-    return audio_files
-
-if __name__ == "__main__":
-    generate_audios(["Black holes are invisible.", "Time stops inside them.", "One could fit Earth inside."])
+    from gtts import gTTS
+    for text, path in zip(texts, paths):
+        gTTS(text=text, lang="en").save(path)
+    print(f"  gTTS OK ({len(paths)} files)")
+    return paths

@@ -1,13 +1,9 @@
-"""Automated YouTube Shorts generator.
-Usage: python main.py "black holes"
-Output: output/<topic>.mp4
-"""
+"""Automated YouTube Shorts generator."""
 import os
 import re
 import sys
 
 
-# --- Inline fact generator (Groq -> Gemini -> OpenAI -> offline) ---
 def generate_facts(topic):
     try:
         from dotenv import load_dotenv
@@ -81,7 +77,6 @@ def generate_facts(topic):
         f"Scientists discovered something about {topic} that changed everything.",
         f"The biggest myth about {topic} is completely wrong.",
     ]
-# --- End inline generator ---
 
 
 def _slug(text):
@@ -107,11 +102,16 @@ def main():
     from audio import generate_audios
     audio_files = generate_audios(facts)
 
-    print("\n[3/3] Rendering video...")
+    print("\n[3/3] Fetching AI backgrounds & rendering video...")
+    from fetch_background import get_background_images
     from CreateVideo import create_video
+    
+    # Generate exactly 3 images (one for each fact)
+    bg_images = get_background_images(topic, num_images=len(facts))
+    
     os.makedirs("output", exist_ok=True)
     out_path = os.path.join("output", f"{_slug(topic)}.mp4")
-    create_video(facts, audio_files, out_path, topic)
+    create_video(facts, audio_files, bg_images, out_path, topic)
 
     size_mb = os.path.getsize(out_path) / (1024 * 1024)
     print(f"\nDONE -> {out_path}")

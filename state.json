@@ -2,7 +2,10 @@
   "done": [
     "the mysterious dancing forest"
   ],
-  "failed": {},
+  "failed": {
+    "the world's oldest computer": 3,
+    "why flamingos turn pink": 1
+  },
   "log": [
     {
       "topic": "the mysterious dancing forest",

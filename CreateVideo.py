@@ -1,4 +1,3 @@
-"""Vertical 1080x1920 video with HD images and perfectly synced white subtitles."""
 import os
 import platform
 from moviepy.config import change_settings
@@ -12,6 +11,7 @@ from moviepy.editor import (
     ImageClip, AudioFileClip, TextClip, CompositeVideoClip,
     CompositeAudioClip, ColorClip
 )
+import numpy as np
 
 try:
     from faster_whisper import WhisperModel
@@ -20,7 +20,7 @@ except ImportError:
     HAS_WHISPER = False
 
 TARGET_W, TARGET_H = 1080, 1920
-GAP = 0.3
+GAP = 0.2
 
 def _safe_textclip(text, size, color="white", **extra):
     common = dict(fontsize=size, color=color, font="DejaVu-Sans-Bold",
@@ -51,22 +51,31 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
         dur = audio_clip.duration + GAP
         
         if i < len(bg_images):
-            bg_img = bg_images[i]
-            clip = ImageClip(bg_img)
-            
+            clip = ImageClip(bg_images[i])
             w_ratio = TARGET_W / clip.w
             h_ratio = TARGET_H / clip.h
             scale = max(w_ratio, h_ratio)
-            
             clip = clip.resize(scale)
             clip = clip.crop(x_center=clip.w/2, y_center=clip.h/2, width=TARGET_W, height=TARGET_H)
             clip = clip.set_duration(dur)
-            clip = clip.resize(lambda t: 1 + 0.05 * t) 
+            
+            if i % 2 == 0:
+                clip = clip.resize(lambda t: 1 + 0.04 * t)
+            else:
+                clip = clip.resize(lambda t: 1.04 - 0.04 * t)
         else:
             clip = ColorClip((TARGET_W, TARGET_H), color=(10, 12, 30), duration=dur)
             
         clip = clip.set_start(starts[i])
         bg_clips.append(clip)
+
+    vignette_array = np.zeros((TARGET_H, TARGET_W))
+    for y in range(TARGET_H):
+        for x in range(TARGET_W):
+            dist = np.sqrt((x - TARGET_W/2)**2 + (y - TARGET_H/2)**2)
+            vignette_array[y, x] = min(dist / (TARGET_W * 0.7), 1.0) * 80
+    vignette_img = np.stack([vignette_array]*3, axis=-1).astype(np.uint8)
+    vignette_clip = ImageClip(vignette_img).set_duration(total_duration).set_opacity(0.4)
 
     print("  Building perfectly synced subtitles...")
     overlays = []
@@ -86,37 +95,26 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
                     word_text = word.word.strip().upper()
                     if not word_text: continue
                     
-                    tc = (_safe_textclip(word_text, 110, color="white")
+                    color = "yellow" if i % 2 == 1 else "white"
+                    
+                    tc = (_safe_textclip(word_text, 110, color=color)
                           .set_duration(w_dur)
                           .set_start(w_start)
                           .set_position(("center", 960)))
                     overlays.append(tc)
-    else:
-        # Fallback if whisper fails to load
-        for text, clip, start_time in zip(texts, audio_clips, starts):
-            words = text.split()
-            chunks = [" ".join(words[i:i+2]) for i in range(0, len(words), 2)]
-            chunk_dur = clip.duration / len(chunks)
-            for i, chunk in enumerate(chunks):
-                w_start = start_time + (i * chunk_dur)
-                tc = (_safe_textclip(chunk.upper(), 110, color="white")
-                      .set_duration(chunk_dur)
-                      .set_start(w_start)
-                      .set_position(("center", 960)))
-                overlays.append(tc)
 
     if topic:
-        title = (_safe_textclip(topic.upper(), 70, color="yellow", method="label")
+        title = (_safe_textclip(topic.upper(), 70, color="white", method="label")
                  .set_duration(min(3, total_duration))
                  .set_position(("center", 250)))
         overlays.append(title)
 
     print("  Compositing video...")
-    final = CompositeVideoClip(bg_clips + overlays).set_duration(total_duration)
+    final = CompositeVideoClip(bg_clips + [vignette_clip] + overlays).set_duration(total_duration)
     final = final.set_audio(final_audio)
 
     final.write_videofile(output_path, fps=30, codec="libx264",
-                          audio_codec="aac", preset="slow", bitrate="8000k", threads=4, 
+                          audio_codec="aac", preset="medium", bitrate="8000k", threads=4, 
                           ffmpeg_params=["-pix_fmt", "yuv420p"], logger="bar")
 
     for c in audio_clips:

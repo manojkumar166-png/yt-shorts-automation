@@ -1,7 +1,6 @@
-*.exe
-*.zip
+.env
 background/
 audio/
 output/
-.env
 __pycache__/
+*.exe

@@ -2,8 +2,8 @@ name: daily-shorts
 
 on:
   schedule:
-    - cron: "30 3 * * *" # Runs at 3:30 AM UTC every day
-  workflow_dispatch:     # Allows you to click "Run" manually
+    - cron: "30 3 * * *"
+  workflow_dispatch:
 
 concurrency: 
   group: shorts
@@ -32,17 +32,26 @@ jobs:
 
       - run: pip install -r requirements.txt
       
+      - name: Ensure state.json exists
+        run: |
+          if [ ! -f state.json ]; then
+            echo '{"done": [], "failed": {}, "log": []}' > state.json
+          fi
+
       - name: Generate Videos
         env:
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
         run: python main.py
+
+      - name: List Files (Debug)
+        run: ls -la output/
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: videos-${{ github.run_id }}
-          path: output/*.mp4
+          path: output/
           retention-days: 7
 
       - name: Commit State
@@ -50,10 +59,13 @@ jobs:
         run: |
           git config user.name "shorts-bot"
           git config user.email "shorts-bot@users.noreply.github.com"
-          # Only add state.json if it actually exists
-          if [ -f state.json ]; then
-            git add state.json
+          git add state.json || echo "No state.json to add"
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "update state [skip ci]"
+            for i in 1 2 3; do 
+              git pull --rebase && git push && break
+              sleep 5
+            done
           fi
-          git diff --cached --quiet && exit 0
-          git commit -m "update state [skip ci]"
-          for i in 1 2 3; do git pull --rebase && git push && break; sleep 5; done

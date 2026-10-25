@@ -32,6 +32,13 @@ jobs:
 
       - run: pip install -r requirements.txt
       
+      # Ensure state.json exists before running the script
+      - name: Ensure state.json exists
+        run: |
+          if [ ! -f state.json ]; then
+            echo '{"done": [], "failed": {}, "log": []}' > state.json
+          fi
+
       - name: Generate Videos
         env:
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
@@ -50,10 +57,17 @@ jobs:
         run: |
           git config user.name "shorts-bot"
           git config user.email "shorts-bot@users.noreply.github.com"
-          # Only add state.json if it actually exists
-          if [ -f state.json ]; then
-            git add state.json
+          
+          # Always add the state file
+          git add state.json || echo "No state.json to add"
+          
+          # Only commit if there are actual changes
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "update state [skip ci]"
+            for i in 1 2 3; do 
+              git pull --rebase && git push && break
+              sleep 5
+            done
           fi
-          git diff --cached --quiet && exit 0
-          git commit -m "update state [skip ci]"
-          for i in 1 2 3; do git pull --rebase && git push && break; sleep 5; done

@@ -9,19 +9,29 @@ from pathlib import Path
 
 STATE_FILE = Path("state.json")
 BANK_FILE = Path("script_bank.json")
-PER_DAY = 5  # Change to 5 for GitHub Actions
+PER_DAY = 5
 MAX_FAILS = 3
 
 def load_state():
     if STATE_FILE.exists():
-        return json.loads(STATE_FILE.read_text(encoding="utf-8"))
+        try:
+            # Try to read the file
+            return json.loads(STATE_FILE.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            # If the file is corrupted, recreate it from scratch
+            print("  [State] state.json is corrupted. Creating a fresh one.")
+            return {"done": [], "failed": {}, "log": []}
     return {"done": [], "failed": {}, "log": []}
 
 def save_state(s):
-    fd, tmp = tempfile.mkstemp(dir=".")
-    with os.fdopen(fd, "w", encoding="utf-8") as f:
-        json.dump(s, f, indent=2, ensure_ascii=False)
-    os.replace(tmp, STATE_FILE)
+    try:
+        # Write to a temp file, then replace, so it never gets half-written
+        fd, tmp = tempfile.mkstemp(dir=".")
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(s, f, indent=2, ensure_ascii=False)
+        os.replace(tmp, STATE_FILE)
+    except Exception as e:
+        print(f"  [State] Failed to save state: {e}")
 
 def get_next_script(s):
     try:
@@ -52,10 +62,6 @@ def generate_video(script_data):
     from fetch_background import get_background_images
     queries = script_data.get("image_queries", [topic, f"{topic} close up", f"{topic} background", topic])
     bg_images = get_background_images(queries, num_images=4)
-    
-    print(f"  [Music] Fetching cinematic background track...")
-    from fetch_music import get_background_music
-    get_background_music()
     
     print(f"  [Video] Rendering...")
     from CreateVideo import create_video

@@ -1,0 +1,102 @@
+[
+  {
+    "topic": "the mysterious dancing forest",
+    "hook": "These trees bend dramatically, and scientists have studied why.",
+    "facts": [
+      "A pine forest in Poland contains hundreds of unusually curved trees.",
+      "Most trunks bend sharply near the ground before curving upward.",
+      "One theory suggests the trees were deliberately shaped for furniture or boatbuilding."
+    ],
+    "image_queries": ["curved trees", "pine forest", "mysterious woods", "forest sunlight"]
+  },
+  {
+    "topic": "the world's oldest computer",
+    "hook": "An ancient machine predicted eclipses over two thousand years ago.",
+    "facts": [
+      "The Antikythera mechanism was recovered from an ancient Greek shipwreck.",
+      "Its intricate gears tracked astronomical cycles and celestial events.",
+      "Researchers use advanced imaging to study its remarkably complex internal structure."
+    ],
+    "image_queries": ["ancient gears", "bronze mechanism", "Greek artifacts", "shipwreck archaeology"]
+  },
+  {
+    "topic": "why flamingos turn pink",
+    "hook": "Flamingos aren't born pink, and their food explains everything.",
+    "facts": [
+      "Flamingo chicks hatch with grayish or whitish feathers.",
+      "Carotenoid pigments in algae and crustaceans contribute to their pink coloration.",
+      "Feather color can vary with diet, species, and overall health."
+    ],
+    "image_queries": ["pink flamingos", "flamingo flock", "salt lake", "flamingo feathers"]
+  },
+  {
+    "topic": "the world's largest flower",
+    "hook": "This enormous flower smells like rotting flesh to attract visitors.",
+    "facts": [
+      "Rafflesia produces one of the largest individual flowers on Earth.",
+      "Its powerful odor attracts carrion-associated flies that help pollinate it.",
+      "The plant lives parasitically inside certain tropical vines."
+    ],
+    "image_queries": ["rafflesia flower", "tropical rainforest", "giant flower", "forest plants"]
+  },
+  {
+    "topic": "the singing sand dunes",
+    "hook": "Some deserts produce deep booming sounds beneath your feet.",
+    "facts": [
+      "Certain sand dunes produce booming or humming sounds when sand avalanches down their slopes.",
+      "The sound depends on factors including grain size, dryness, and synchronized movement.",
+      "Researchers study these acoustic effects to understand how granular materials behave."
+    ],
+    "image_queries": ["sand dunes", "desert landscape", "golden desert", "desert sunset"]
+  },
+  {
+    "topic": "the invisible ink of ancient spies",
+    "hook": "Ancient messages could hide in plain sight using everyday ingredients.",
+    "facts": [
+      "Lemon juice can act as invisible ink because dried residue is difficult to see.",
+      "Gentle heating can darken the dried organic material and reveal writing.",
+      "Historical espionage has used many secret-writing techniques, including chemical inks."
+    ],
+    "image_queries": ["secret letter", "old parchment", "ink bottle", "antique paper"]
+  },
+  {
+    "topic": "the animal that can regrow its brain",
+    "hook": "This tiny creature can rebuild damaged parts of its nervous system.",
+    "facts": [
+      "Planarian flatworms can regenerate substantial portions of their bodies after injury.",
+      "Specialized stem cells help them replace missing tissues, including nervous-system structures.",
+      "Scientists study planarians to investigate regeneration and tissue repair."
+    ],
+    "image_queries": ["planarian worm", "microscope biology", "flatworm closeup", "laboratory science"]
+  },
+  {
+    "topic": "the world's quietest room",
+    "hook": "In an extremely quiet room, you may notice sounds from your own body.",
+    "facts": [
+      "Anechoic chambers are designed to absorb sound reflections.",
+      "Their walls often use specialized wedges made from sound-absorbing materials.",
+      "Such rooms help engineers measure audio equipment and study human hearing."
+    ],
+    "image_queries": ["sound chamber", "acoustic foam", "recording studio", "sound waves"]
+  },
+  {
+    "topic": "why some lakes turn bright pink",
+    "hook": "Some lakes look bubblegum pink without any artificial coloring.",
+    "facts": [
+      "Certain salt lakes become pink because of microorganisms and their pigments.",
+      "High salinity and changing environmental conditions can influence the lake's color.",
+      "The shade may shift with season, temperature, and water chemistry."
+    ],
+    "image_queries": ["pink lake", "salt lake", "aerial landscape", "pink water"]
+  },
+  {
+    "topic": "the ancient city beneath the sand",
+    "hook": "A forgotten city can remain hidden for centuries beneath shifting sands.",
+    "facts": [
+      "Archaeologists use satellite imagery to identify possible buried structures in desert landscapes.",
+      "Ground surveys and excavations help determine whether unusual patterns are human-made.",
+      "Windblown sand can bury buildings while also protecting some archaeological remains."
+    ],
+    "image_queries": ["desert ruins", "ancient city", "sand dunes", "archaeological site"]
+  }
+]

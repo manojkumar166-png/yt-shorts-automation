@@ -11,7 +11,10 @@ from moviepy.editor import (
     ImageClip, AudioFileClip, TextClip, CompositeVideoClip,
     CompositeAudioClip, ColorClip
 )
+from moviepy.video.fx.all import colorx, lum_contrast
+from moviepy.audio.fx.all import audio_loop
 import numpy as np
+import random
 
 try:
     from faster_whisper import WhisperModel
@@ -22,10 +25,28 @@ except ImportError:
 TARGET_W, TARGET_H = 1080, 1920
 GAP = 0.2
 
+EMOJI_MAP = {
+    "space": "🚀", "black hole": "🌌", "galaxy": "🌌", "star": "⭐", "universe": "🌌",
+    "cat": "🐱", "dog": "🐶", "animal": "🐾",
+    "ocean": "🌊", "water": "💧", "fish": "🐟", "shark": "🦈",
+    "history": "📜", "ancient": "🏛️", "rome": "🏛️", "egypt": "🐪", "war": "⚔️",
+    "brain": "🧠", "psychology": "🧠", "mind": "🧠",
+    "money": "💰", "rich": "💸", "business": "📈",
+    "fire": "🔥", "danger": "⚠️", "death": "💀", "secret": "🤫",
+    "earth": "🌍", "nature": "🌿", "tree": "🌳", "mountain": "⛰️"
+}
+
+def get_emoji_for_topic(topic):
+    topic = topic.lower()
+    for key, emoji in EMOJI_MAP.items():
+        if key in topic:
+            return emoji
+    return "🔥"
+
 def _safe_textclip(text, size, color="white", **extra):
     common = dict(fontsize=size, color=color, font="DejaVu-Sans-Bold",
                   method="caption", size=(980, None), align="center",
-                  stroke_color="black", stroke_width=5) 
+                  stroke_color="black", stroke_width=8) 
     common.update(extra)
     try:
         return TextClip(text, **common)
@@ -35,6 +56,7 @@ def _safe_textclip(text, size, color="white", **extra):
 
 def create_video(texts, audio_files, bg_images, output_path, topic=""):
     audio_clips = [AudioFileClip(p) for p in audio_files]
+    topic_emoji = get_emoji_for_topic(topic)
 
     starts, t = [], 0.0
     for clip in audio_clips:
@@ -42,78 +64,74 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
         t += clip.duration + GAP
     total_duration = t + 0.5
 
-    final_audio = CompositeAudioClip(
-        [c.set_start(s) for c, s in zip(audio_clips, starts)]
-    ).set_duration(total_duration)
+    # 1. AUDIO MIXING
+    voice_track = CompositeAudioClip([c.set_start(s) for c, s in zip(audio_clips, starts)])
+    audio_layers = [voice_track]
+    
+    if os.path.exists("bg_music.mp3"):
+        print("  [Mix] Adding background music...")
+        bg_music = AudioFileClip("bg_music.mp3")
+        bg_music = audio_loop(bg_music, duration=total_duration).volumex(0.15)
+        audio_layers.append(bg_music)
+        
+    if os.path.exists("whoosh.mp3"):
+        print("  [Mix] Adding whoosh effects...")
+        whoosh = AudioFileClip("whoosh.mp3").volumex(0.5)
+        whooshes = []
+        for i, start in enumerate(starts):
+            if i > 0:
+                whooshes.append(whoosh.set_start(start))
+        if whooshes:
+            audio_layers.append(CompositeAudioClip(whooshes))
 
+    final_audio = CompositeAudioClip(audio_layers).set_duration(total_duration)
+
+    # 2. BACKGROUND CLIPS
     bg_clips = []
     for i, audio_clip in enumerate(audio_clips):
         dur = audio_clip.duration + GAP
-        
+        if i == len(audio_clips) - 1:
+            dur += 0.5
+            
         if i < len(bg_images):
             clip = ImageClip(bg_images[i])
-            
-            # 1. Make the image MASSIVE (2.5x the screen size)
-            massive_w = int(TARGET_W * 2.5)
-            massive_h = int(TARGET_H * 2.5)
-            
-            # 2. Scale the image to cover this massive area
-            w_ratio = massive_w / clip.w
-            h_ratio = massive_h / clip.h
-            scale = max(w_ratio, h_ratio)
+            w_ratio = TARGET_W / clip.w
+            h_ratio = TARGET_H / clip.h
+            scale = max(w_ratio, h_ratio) * 1.1 
             clip = clip.resize(scale)
-            clip = clip.crop(x_center=clip.w/2, y_center=clip.h/2, width=massive_w, height=massive_h)
-            clip = clip.set_duration(dur)
-            
-            # 3. Create the camera movement function
-            # The camera starts in the middle and moves, but the image is so big it never shows the edge.
-            def make_camera_move(duration, index):
-                def pos(t):
-                    # Center coordinates of the massive image
-                    center_x = massive_w / 2 - TARGET_W / 2
-                    center_y = massive_h / 2 - TARGET_H / 2
-                    
-                    if index % 4 == 0:
-                        # Zoom in (handled by resize below)
-                        return (center_x, center_y)
-                    elif index % 4 == 1:
-                        # Zoom out (handled by resize below)
-                        return (center_x, center_y)
-                    elif index % 4 == 2:
-                        # Pan Left to Right
-                        return (center_x - (massive_w - TARGET_W) / 2 + (massive_w - TARGET_W) * (t / duration), center_y)
-                    elif index % 4 == 3:
-                        # Pan Right to Left
-                        return (center_x + (massive_w - TARGET_W) / 2 - (massive_w - TARGET_W) * (t / duration), center_y)
-                return pos
-
-            # Apply pan
-            clip = clip.set_position(make_camera_move(dur, i))
-            
-            # Apply zoom (if it's a zoom clip)
-            if i % 4 == 0:
-                clip = clip.resize(lambda t: 1 + 0.05 * t)
-            elif i % 4 == 1:
-                clip = clip.resize(lambda t: 1.05 - 0.05 * t)
-
-            # Crop the moving camera window to the screen size
             clip = clip.crop(x_center=clip.w/2, y_center=clip.h/2, width=TARGET_W, height=TARGET_H)
-                
+            clip = colorx(clip, 1.2)
+            clip = lum_contrast(clip, contrast=0.2)
+            clip = clip.set_duration(dur)
+            clip = clip.resize(lambda t: 1 + (0.12 * (t / dur) ** 0.5))
+            
+            def shake_position(t):
+                if t < 0.15:
+                    return (random.randint(-8, 8), random.randint(-8, 8))
+                return ("center", "center")
+            clip = clip.set_position(shake_position)
+            
+            if i > 0:
+                clip = clip.crossfadein(0.3)
+                overlap_start = max(0, starts[i] - 0.15)
+            else:
+                overlap_start = 0
+            clip = clip.set_start(overlap_start)
         else:
             clip = ColorClip((TARGET_W, TARGET_H), color=(10, 12, 30), duration=dur)
-            
-        clip = clip.set_start(starts[i])
+            clip = clip.set_start(starts[i])
         bg_clips.append(clip)
 
-    # Add Vignette
+    # 3. VIGNETTE
     vignette_array = np.zeros((TARGET_H, TARGET_W))
     for y in range(TARGET_H):
         for x in range(TARGET_W):
             dist = np.sqrt((x - TARGET_W/2)**2 + (y - TARGET_H/2)**2)
-            vignette_array[y, x] = min(dist / (TARGET_W * 0.7), 1.0) * 80
+            vignette_array[y, x] = min(dist / (TARGET_W * 0.6), 1.0) * 120
     vignette_img = np.stack([vignette_array]*3, axis=-1).astype(np.uint8)
-    vignette_clip = ImageClip(vignette_img).set_duration(total_duration).set_opacity(0.4)
+    vignette_clip = ImageClip(vignette_img).set_duration(total_duration).set_opacity(0.5)
 
+    # 4. SUBTITLES WITH EMOJIS ON EVERY SCENE
     print("  Building perfectly synced subtitles...")
     overlays = []
     
@@ -122,6 +140,9 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
         
         for i, (audio_file, start_time) in enumerate(zip(audio_files, starts)):
             segments, _ = model.transcribe(audio_file, word_timestamps=True)
+            
+            # We track if we've added the emoji to this specific scene yet
+            emoji_added = False
             
             for segment in segments:
                 for word in segment.words:
@@ -132,22 +153,26 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
                     word_text = word.word.strip().upper()
                     if not word_text: continue
                     
-                    color = "yellow" if i % 2 == 1 else "white"
+                    # Add emoji to the first word of the audio file
+                    if not emoji_added:
+                        word_text = f"{word_text} {topic_emoji}"
+                        emoji_added = True
                     
-                    tc = (_safe_textclip(word_text, 110, color=color)
+                    def make_scale(t):
+                        if t < 0.08:
+                            return 1.08 - (t * 1.0)
+                        return 1.0
+                        
+                    tc = (_safe_textclip(word_text, 115, color="white")
                           .set_duration(w_dur)
                           .set_start(w_start)
-                          .set_position(("center", 960)))
+                          .set_position(("center", 1450)))
+                    
+                    tc = tc.resize(make_scale)
                     overlays.append(tc)
 
-    if topic:
-        title = (_safe_textclip(topic.upper(), 70, color="white", method="label")
-                 .set_duration(min(3, total_duration))
-                 .set_position(("center", 250)))
-        overlays.append(title)
-
     print("  Compositing video...")
-    final = CompositeVideoClip(bg_clips + [vignette_clip] + overlays).set_duration(total_duration)
+    final = CompositeVideoClip(bg_clips + [vignette_clip] + overlays, size=(TARGET_W, TARGET_H)).set_duration(total_duration)
     final = final.set_audio(final_audio)
 
     final.write_videofile(output_path, fps=30, codec="libx264",

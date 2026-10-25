@@ -1,1 +1,19 @@
+<<<<<<< HEAD
 {"done": [], "failed": {}, "log": []} 
+=======
+{
+  "done": [
+    "the mysterious dancing forest"
+  ],
+  "failed": {
+    "the world's oldest computer": 3,
+    "why flamingos turn pink": 1
+  },
+  "log": [
+    {
+      "topic": "the mysterious dancing forest",
+      "date": "2026-10-25"
+    }
+  ]
+}
+>>>>>>> bab98854d42fa01df095e19efcd36c3061328550

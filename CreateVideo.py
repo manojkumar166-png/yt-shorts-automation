@@ -23,7 +23,6 @@ TARGET_W, TARGET_H = 1080, 1920
 GAP = 0.3
 
 def _safe_textclip(text, size, color="white", **extra):
-    # Balanced stroke width (5) so it outlines the text without swallowing it
     common = dict(fontsize=size, color=color, font="DejaVu-Sans-Bold",
                   method="caption", size=(980, None), align="center",
                   stroke_color="black", stroke_width=5) 
@@ -87,13 +86,13 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
                     word_text = word.word.strip().upper()
                     if not word_text: continue
                     
-                    # Use pure white text
                     tc = (_safe_textclip(word_text, 110, color="white")
                           .set_duration(w_dur)
                           .set_start(w_start)
                           .set_position(("center", 960)))
                     overlays.append(tc)
     else:
+        # Fallback if whisper fails to load
         for text, clip, start_time in zip(texts, audio_clips, starts):
             words = text.split()
             chunks = [" ".join(words[i:i+2]) for i in range(0, len(words), 2)]

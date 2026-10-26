@@ -18,7 +18,7 @@ def load_state():
             return json.loads(STATE_FILE.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
             print("  [State] state.json is corrupted. Recreating...")
-            STATE_FILE.unlink() # Delete the corrupted file
+            STATE_FILE.unlink()
             return {"done": [], "failed": {}, "log": []}
     return {"done": [], "failed": {}, "log": []}
 
@@ -75,8 +75,16 @@ def main():
     s = load_state()
     today = date.today().isoformat()
     
-    made_today = sum(1 for e in s["log"] if e["date"] == today)
-    needed = PER_DAY - made_today
+    # If you run this manually on GitHub, it ignores the "already done today" limit.
+    # If it runs on the schedule, it respects the limit.
+    is_manual = os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch"
+    
+    if is_manual:
+        print("  [Mode] Manual trigger detected. Forcing generation.")
+        needed = PER_DAY
+    else:
+        made_today = sum(1 for e in s["log"] if e["date"] == today)
+        needed = PER_DAY - made_today
     
     print(f"\n=== YT Auto Generator ===")
     print(f"Need {needed} videos today.")

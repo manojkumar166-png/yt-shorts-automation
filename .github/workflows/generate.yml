@@ -30,8 +30,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y imagemagick ffmpeg
 
-      - run: pip install -r requirements.txt
-      
+      - name: Install Python Dependencies
+        run: pip install -r requirements.txt
+
       - name: Ensure clean state.json exists
         run: |
           python -c "import json, os; f = 'state.json'; d = json.load(open(f)) if os.path.exists(f) and os.path.getsize(f) > 0 else {'done': [], 'failed': {}, 'log': []}; json.dump(d, open(f, 'w'), indent=2)"

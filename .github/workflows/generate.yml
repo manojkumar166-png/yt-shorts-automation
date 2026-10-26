@@ -29,23 +29,27 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y imagemagick ffmpeg
-          # Unblock ImageMagick security policy just in case
-          sudo sed -i 's/none/read,write/g' /etc/ImageMagick-6/policy.xml || true
 
       - name: Install Python Dependencies
         run: pip install -r requirements.txt
 
-      - name: Ensure clean state.json exists
+      - name: Prefetch Images (Look ahead 14 days)
+        env:
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+        run: python prefetch.py
+        continue-on-error: true
+
+      - name: Commit Prefetched Images
         run: |
-          python -c "import json, os; f = 'state.json'; d = json.load(open(f)) if os.path.exists(f) and os.path.getsize(f) > 0 else {'done': [], 'failed': {}, 'log': []}; json.dump(d, open(f, 'w'), indent=2)"
+          git config user.name "shorts-bot"
+          git config user.email "shorts-bot@users.noreply.github.com"
+          git add assets/
+          git diff --cached --quiet || (git commit -m "cache images [skip ci]" && git pull --rebase && git push)
 
       - name: Generate Videos
         env:
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
         run: python main.py
-
-      - name: List Files (Debug)
-        run: ls -la output/
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

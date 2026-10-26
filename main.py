@@ -59,7 +59,7 @@ def generate_video(script_data):
     print(f"  [Images] Fetching backgrounds...")
     from fetch_background import get_background_images
     queries = script_data.get("image_queries", [topic, f"{topic} close up", f"{topic} background", topic])
-    bg_images = get_background_images(queries, num_images=4)
+    bg_images = get_background_images(queries, num_images=4, topic=topic)
     
     print(f"  [Video] Rendering...")
     from CreateVideo import create_video

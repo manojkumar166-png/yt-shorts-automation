@@ -1,10 +1,9 @@
 import os
-import requests
-from PIL import Image
-from io import BytesIO
+import shutil
+from asset_fetcher import ensure_images
 
-def get_background_images(queries, num_images=4):
-    print(f"  [Background] Fetching {num_images} HD images via Wikipedia...")
+def get_background_images(queries, num_images=4, topic=""):
+    print(f"  [Background] Checking cache for {num_images} HD images...")
     
     if os.path.exists("background"):
         for f in os.listdir("background"):
@@ -15,93 +14,25 @@ def get_background_images(queries, num_images=4):
         os.makedirs("background")
 
     image_paths = []
-    downloaded_urls = set()
     
-    # A browser header is required to access Wikipedia images
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    }
+    safe_id = "".join(c for c in topic if c.isalnum() or c in (' ', '_')).rstrip().replace(" ", "_")
     
-    while len(queries) < num_images:
-        queries.append("abstract background")
-        
-    for i in range(num_images):
-        query = queries[i].replace("_", " ").replace("*", "").strip()
-        print(f"  [Background] Searching Wikipedia for: {query}")
-        filename = f"background/bg_{i}.jpg"
-        success = False
-        
-        # Method 1: Wikipedia REST API (Most reliable)
-        try:
-            # Replace spaces with underscores for Wikipedia
-            safe_query = query.replace(" ", "_")
-            url = f"https://en.wikipedia.org/api/rest_v1/page/media-list/{safe_query}"
-            
-            r = requests.get(url, headers=headers, timeout=15)
-            if r.status_code == 200:
-                items = r.json().get("items", [])
-                for item in items:
-                    if item.get("type") == "image" and item.get("srcset"):
-                        # Grab the highest resolution thumbnail
-                        img_url = item["srcset"][0]["src"]
-                        if img_url.startswith("//"):
-                            img_url = "https:" + img_url
-                            
-                        if img_url in downloaded_urls: continue
-                        
-                        res = requests.get(img_url, headers=headers, timeout=20)
-                        res.raise_for_status()
-                        
-                        img = Image.open(BytesIO(res.content)).convert('RGB')
-                        img = img.resize((1080, 1920), Image.Resampling.LANCZOS)
-                        img.save(filename, "JPEG", quality=100)
-                        
-                        image_paths.append(filename)
-                        downloaded_urls.add(img_url)
-                        print(f"  [Background] Image {i+1} downloaded (Wikipedia).")
-                        success = True
-                        break
-        except Exception as e:
-            print(f"  [Background] Wikipedia failed: {e}")
-
-        # Method 2: Fallback to Pixabay (if Wikipedia fails)
-        if not success:
-            pixabay_key = os.getenv("PIXABAY_API_KEY", "").strip()
-            if pixabay_key:
-                try:
-                    url = "https://pixabay.com/api/"
-                    params = {"key": pixabay_key, "q": query, "image_type": "photo", "orientation": "vertical", "per_page": 5, "safesearch": "true"}
-                    r = requests.get(url, params=params, timeout=15)
-                    hits = r.json().get("hits", [])
-                    for hit in hits:
-                        img_url = hit.get("largeImageURL")
-                        if not img_url or img_url in downloaded_urls: continue
-                        
-                        res = requests.get(img_url, timeout=20)
-                        res.raise_for_status()
-                        img = Image.open(BytesIO(res.content)).convert('RGB')
-                        img = img.resize((1080, 1920), Image.Resampling.LANCZOS)
-                        img.save(filename, "JPEG", quality=100)
-                        
-                        image_paths.append(filename)
-                        downloaded_urls.add(img_url)
-                        print(f"  [Background] Image {i+1} downloaded (Pixabay).")
-                        success = True
-                        break
-                except:
-                    pass
-
-        # Method 3: Gradient Fallback
-        if not success:
-            print(f"  [Background] Image {i+1} failed. Using gradient.")
-            img = Image.new('RGB', (1080, 1920), color=(10, 12, 30))
-            for y in range(1920):
-                r_val = 10 + int((y / 1920) * 20)
-                g_val = 12 + int((y / 1920) * 15)
-                b_val = 30 + int((y / 1920) * 10)
-                for x in range(1080):
-                    img.putpixel((x, y), (r_val, g_val, b_val))
-            img.save(filename, "JPEG")
-            image_paths.append(filename)
+    # 1. Try to load from cache
+    if os.path.exists(f"assets/{safe_id}"):
+        for i in range(4):
+            src = f"assets/{safe_id}/bg_{i}.jpg"
+            if os.path.exists(src):
+                dest = f"background/bg_{i}.jpg"
+                shutil.copy(src, dest)
+                image_paths.append(dest)
+                
+    # 2. If cache is missing, download them
+    if len(image_paths) < num_images:
+        print(f"  [Background] Cache miss. Downloading...")
+        cached_paths = ensure_images(safe_id, queries)
+        for i, path in enumerate(cached_paths[:num_images]):
+            dest = f"background/bg_{i}.jpg"
+            shutil.copy(path, dest)
+            image_paths.append(dest)
             
     return image_paths

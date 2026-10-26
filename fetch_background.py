@@ -2,14 +2,9 @@ import os
 import requests
 from PIL import Image
 from io import BytesIO
-from dotenv import load_dotenv
-import random
-
-load_dotenv()
-PIXABAY_KEY = os.getenv("PIXABAY_API_KEY", "").strip()
 
 def get_background_images(queries, num_images=4):
-    print(f"  [Background] Fetching {num_images} HD images...")
+    print(f"  [Background] Fetching {num_images} HD images via Wikipedia...")
     
     if os.path.exists("background"):
         for f in os.listdir("background"):
@@ -22,61 +17,81 @@ def get_background_images(queries, num_images=4):
     image_paths = []
     downloaded_urls = set()
     
+    # A browser header is required to access Wikipedia images
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+    
     while len(queries) < num_images:
-        queries.append("abstract")
+        queries.append("abstract background")
         
     for i in range(num_images):
         query = queries[i].replace("_", " ").replace("*", "").strip()
+        print(f"  [Background] Searching Wikipedia for: {query}")
         filename = f"background/bg_{i}.jpg"
         success = False
         
-        # --- METHOD 1: Try Pixabay ---
-        if PIXABAY_KEY:
-            url = "https://pixabay.com/api/"
-            params = {
-                "key": PIXABAY_KEY, 
-                "q": query, 
-                "image_type": "photo", 
-                "orientation": "vertical", 
-                "per_page": 15, 
-                "safesearch": "true"
-            }
-            try:
-                r = requests.get(url, params=params, timeout=10)
-                if r.status_code == 200:
+        # Method 1: Wikipedia REST API (Most reliable)
+        try:
+            # Replace spaces with underscores for Wikipedia
+            safe_query = query.replace(" ", "_")
+            url = f"https://en.wikipedia.org/api/rest_v1/page/media-list/{safe_query}"
+            
+            r = requests.get(url, headers=headers, timeout=15)
+            if r.status_code == 200:
+                items = r.json().get("items", [])
+                for item in items:
+                    if item.get("type") == "image" and item.get("srcset"):
+                        # Grab the highest resolution thumbnail
+                        img_url = item["srcset"][0]["src"]
+                        if img_url.startswith("//"):
+                            img_url = "https:" + img_url
+                            
+                        if img_url in downloaded_urls: continue
+                        
+                        res = requests.get(img_url, headers=headers, timeout=20)
+                        res.raise_for_status()
+                        
+                        img = Image.open(BytesIO(res.content)).convert('RGB')
+                        img = img.resize((1080, 1920), Image.Resampling.LANCZOS)
+                        img.save(filename, "JPEG", quality=100)
+                        
+                        image_paths.append(filename)
+                        downloaded_urls.add(img_url)
+                        print(f"  [Background] Image {i+1} downloaded (Wikipedia).")
+                        success = True
+                        break
+        except Exception as e:
+            print(f"  [Background] Wikipedia failed: {e}")
+
+        # Method 2: Fallback to Pixabay (if Wikipedia fails)
+        if not success:
+            pixabay_key = os.getenv("PIXABAY_API_KEY", "").strip()
+            if pixabay_key:
+                try:
+                    url = "https://pixabay.com/api/"
+                    params = {"key": pixabay_key, "q": query, "image_type": "photo", "orientation": "vertical", "per_page": 5, "safesearch": "true"}
+                    r = requests.get(url, params=params, timeout=15)
                     hits = r.json().get("hits", [])
                     for hit in hits:
                         img_url = hit.get("largeImageURL")
                         if not img_url or img_url in downloaded_urls: continue
                         
-                        res = requests.get(img_url, timeout=15)
-                        if res.status_code == 200:
-                            img = Image.open(BytesIO(res.content)).convert('RGB')
-                            img = img.resize((1080, 1920), Image.Resampling.LANCZOS)
-                            img.save(filename, "JPEG", quality=100)
-                            image_paths.append(filename)
-                            downloaded_urls.add(img_url)
-                            print(f"  [Background] Image {i+1} downloaded (Pixabay).")
-                            success = True
-                            break
-            except Exception as e:
-                pass
+                        res = requests.get(img_url, timeout=20)
+                        res.raise_for_status()
+                        img = Image.open(BytesIO(res.content)).convert('RGB')
+                        img = img.resize((1080, 1920), Image.Resampling.LANCZOS)
+                        img.save(filename, "JPEG", quality=100)
+                        
+                        image_paths.append(filename)
+                        downloaded_urls.add(img_url)
+                        print(f"  [Background] Image {i+1} downloaded (Pixabay).")
+                        success = True
+                        break
+                except:
+                    pass
 
-        # --- METHOD 2: Try Lorem Picsum (If Pixabay fails) ---
-        if not success:
-            try:
-                picsum_url = f"https://picsum.photos/1080/1920?random={i}"
-                res = requests.get(picsum_url, timeout=15)
-                res.raise_for_status()
-                img = Image.open(BytesIO(res.content)).convert('RGB')
-                img.save(filename, "JPEG", quality=100)
-                image_paths.append(filename)
-                print(f"  [Background] Image {i+1} downloaded (Picsum Fallback).")
-                success = True
-            except Exception:
-                pass
-                
-        # --- METHOD 3: Gradient Fallback ---
+        # Method 3: Gradient Fallback
         if not success:
             print(f"  [Background] Image {i+1} failed. Using gradient.")
             img = Image.new('RGB', (1080, 1920), color=(10, 12, 30))

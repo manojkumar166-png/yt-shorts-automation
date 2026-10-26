@@ -1,5 +1,32 @@
 {
-  "done": [],
+  "done": [
+    "the mysterious dancing forest",
+    "the world's oldest computer",
+    "why flamingos turn pink",
+    "the world's largest flower",
+    "the singing sand dunes"
+  ],
   "failed": {},
-  "log": []
+  "log": [
+    {
+      "topic": "the mysterious dancing forest",
+      "date": "2026-10-26"
+    },
+    {
+      "topic": "the world's oldest computer",
+      "date": "2026-10-26"
+    },
+    {
+      "topic": "why flamingos turn pink",
+      "date": "2026-10-26"
+    },
+    {
+      "topic": "the world's largest flower",
+      "date": "2026-10-26"
+    },
+    {
+      "topic": "the singing sand dunes",
+      "date": "2026-10-26"
+    }
+  ]
 }

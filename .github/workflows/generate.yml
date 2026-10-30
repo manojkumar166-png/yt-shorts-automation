@@ -57,7 +57,7 @@ jobs:
         with:
           name: videos-${{ github.run_id }}
           path: output/
-          retention-days: 7
+          retention-days: 2
 
       - name: Commit State
         if: always()

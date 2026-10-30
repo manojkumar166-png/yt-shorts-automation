@@ -4,7 +4,12 @@
     "the world's oldest computer",
     "why flamingos turn pink",
     "the world's largest flower",
-    "the singing sand dunes"
+    "the singing sand dunes",
+    "the invisible ink of ancient spies",
+    "the animal that can regrow its brain",
+    "the world's quietest room",
+    "why some lakes turn bright pink",
+    "the ancient city beneath the sand"
   ],
   "failed": {},
   "log": [
@@ -107,6 +112,26 @@
     {
       "topic": "the singing sand dunes",
       "date": "2026-10-29"
+    },
+    {
+      "topic": "the invisible ink of ancient spies",
+      "date": "2026-10-30"
+    },
+    {
+      "topic": "the animal that can regrow its brain",
+      "date": "2026-10-30"
+    },
+    {
+      "topic": "the world's quietest room",
+      "date": "2026-10-30"
+    },
+    {
+      "topic": "why some lakes turn bright pink",
+      "date": "2026-10-30"
+    },
+    {
+      "topic": "the ancient city beneath the sand",
+      "date": "2026-10-30"
     }
   ]
 }

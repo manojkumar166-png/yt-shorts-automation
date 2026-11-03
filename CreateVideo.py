@@ -61,7 +61,7 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
     total_duration = t + 0.5
     print(
         f"  [Duration] Narration {speech_duration:.1f}s; "
-        f"rendered video {total_duration:.1f}s (target approximately 60s)."
+        f"rendered video {total_duration:.1f}s (target approximately 70s)."
     )
 
     final_audio = CompositeAudioClip(
@@ -69,41 +69,36 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
     ).set_duration(total_duration)
 
     bg_clips = []
+    images_per_scene = 2
     for i, audio_clip in enumerate(audio_clips):
         dur = audio_clip.duration + GAP
         if i == len(audio_clips) - 1:
             dur += 0.5
             
-        if i < len(bg_images):
-            clip = ImageClip(bg_images[i])
-            
+        scene_clips = []
+        first_image_index = i * images_per_scene
+        view_duration = dur / images_per_scene
+        for view in range(images_per_scene):
+            image_index = first_image_index + view
+            if image_index >= len(bg_images):
+                continue
+            clip = ImageClip(bg_images[image_index])
             w_ratio = TARGET_W / clip.w
             h_ratio = TARGET_H / clip.h
-            scale = max(w_ratio, h_ratio) * 1.1 
+            scale = max(w_ratio, h_ratio) * 1.1
             clip = clip.resize(scale)
-            
             clip = clip.crop(x_center=clip.w/2, y_center=clip.h/2, width=TARGET_W, height=TARGET_H)
             clip = colorx(clip, 1.2)
             clip = lum_contrast(clip, contrast=0.2)
-            clip = clip.set_duration(dur)
-            clip = clip.resize(lambda t: 1 + (0.12 * (t / dur) ** 0.5))
-            
-            def shake_position(t):
-                if t < 0.15:
-                    return (random.randint(-8, 8), random.randint(-8, 8))
-                return ("center", "center")
-            clip = clip.set_position(shake_position)
-            
-            if i > 0:
-                clip = clip.crossfadein(0.3)
-                overlap_start = max(0, starts[i] - 0.15)
-            else:
-                overlap_start = 0
-            clip = clip.set_start(overlap_start)
-        else:
-            clip = ColorClip((TARGET_W, TARGET_H), color=(10, 12, 30), duration=dur)
-            clip = clip.set_start(starts[i])
-        bg_clips.append(clip)
+            clip = clip.set_duration(view_duration)
+            clip = clip.resize(lambda t, d=view_duration: 1 + (0.12 * (t / d) ** 0.5))
+            clip = clip.set_start(starts[i] + view * view_duration)
+            if i > 0 or view > 0:
+                clip = clip.crossfadein(0.2)
+            scene_clips.append(clip)
+        if not scene_clips:
+            scene_clips.append(ColorClip((TARGET_W, TARGET_H), color=(10, 12, 30), duration=dur).set_start(starts[i]))
+        bg_clips.extend(scene_clips)
 
     vignette_array = np.zeros((TARGET_H, TARGET_W))
     for y in range(TARGET_H):

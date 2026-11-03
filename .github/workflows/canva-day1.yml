@@ -1,0 +1,53 @@
+name: Canva Day 1 Video
+
+on:
+  workflow_dispatch:
+    inputs:
+      day:
+        description: "Series day to render (Day 1 is ready)"
+        required: true
+        default: "1"
+        type: choice
+        options:
+          - "1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: canva-series-day1
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install Canva pipeline dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "Pillow>=9.5,<12" "edge-tts>=6.1.9"
+
+      - name: Render 30-second vertical tutorial
+        run: python -u canva-series/render_day.py --day "${{ inputs.day }}"
+
+      - name: Upload MP4
+        uses: actions/upload-artifact@v4
+        with:
+          name: canva-day-${{ inputs.day }}
+          path: canva-series/output/day${{ inputs.day }}.mp4
+          if-no-files-found: error
+          retention-days: 14

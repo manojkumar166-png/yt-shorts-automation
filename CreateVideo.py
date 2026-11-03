@@ -54,10 +54,15 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
     audio_clips = [AudioFileClip(p) for p in audio_files]
 
     starts, t = [], 0.0
+    speech_duration = sum(clip.duration for clip in audio_clips)
     for clip in audio_clips:
         starts.append(t)
         t += clip.duration + GAP
     total_duration = t + 0.5
+    print(
+        f"  [Duration] Narration {speech_duration:.1f}s; "
+        f"rendered video {total_duration:.1f}s (target approximately 60s)."
+    )
 
     final_audio = CompositeAudioClip(
         [c.set_start(s) for c, s in zip(audio_clips, starts)]

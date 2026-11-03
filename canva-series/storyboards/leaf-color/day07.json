@@ -1,0 +1,48 @@
+{
+  "day": 7,
+  "title": "Why Leaves Change Color: Falling Leaves",
+  "output": "day07.mp4",
+  "duration_seconds": 30,
+  "fps": 30,
+  "width": 720,
+  "height": 1280,
+  "voice": "en-US-AriaNeural",
+  "scenes": [
+    {
+      "image": "screen-01",
+      "title": "THE LEAF LETS GO",
+      "caption": "A separation layer forms at the stem.",
+      "narration": "As the leaf ages, a layer of cells forms where the leaf joins the twig. This weakens the connection in a controlled way."
+    },
+    {
+      "image": "screen-02",
+      "title": "AUTUMN ON THE GROUND",
+      "caption": "Leaves fall and cover the forest floor.",
+      "narration": "Once the connection is ready, wind or gravity can carry the leaf down. The forest floor becomes a blanket of fallen leaves."
+    },
+    {
+      "image": "screen-03",
+      "title": "A CLOSER LOOK",
+      "caption": "Each fallen leaf carries a seasonal record.",
+      "narration": "The colors and patterns on a fallen leaf reflect its pigments, its age, and the conditions it experienced during the season."
+    },
+    {
+      "image": "screen-04",
+      "title": "WIND AND RAIN",
+      "caption": "Weather helps move leaves from branches.",
+      "narration": "Wind, rain, and cooling temperatures all help finish the process. Different trees release their leaves at different times."
+    },
+    {
+      "image": "screen-05",
+      "title": "A NATURAL RECYCLING LOOP",
+      "caption": "Fallen leaves become part of the soil.",
+      "narration": "Fungi, bacteria, and small animals break down fallen leaves. Their nutrients return to the soil and support new growth."
+    },
+    {
+      "image": "screen-06",
+      "title": "THE FOREST FLOOR",
+      "caption": "Decomposition feeds the next season.",
+      "narration": "What looks like an ending is also a beginning. Decomposing leaves help build healthy soil for the forest."
+    }
+  ]
+}

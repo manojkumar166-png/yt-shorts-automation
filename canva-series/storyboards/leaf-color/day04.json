@@ -1,0 +1,48 @@
+{
+  "day": 4,
+  "title": "Why Leaves Change Color: Red and Purple",
+  "output": "day04.mp4",
+  "duration_seconds": 30,
+  "fps": 30,
+  "width": 720,
+  "height": 1280,
+  "voice": "en-US-AriaNeural",
+  "scenes": [
+    {
+      "image": "screen-01",
+      "title": "WHERE RED COMES FROM",
+      "caption": "Some leaves make red pigments in autumn.",
+      "narration": "Unlike yellow carotenoids, many red pigments become especially noticeable because trees produce them during autumn."
+    },
+    {
+      "image": "screen-02",
+      "title": "MEET ANTHOCYANINS",
+      "caption": "Anthocyanins create red, purple, and crimson.",
+      "narration": "Anthocyanins are water-soluble pigments. They can create vivid red, purple, and sometimes blue shades in leaves and fruits."
+    },
+    {
+      "image": "screen-03",
+      "title": "A BRIGHT AUTUMN RED",
+      "caption": "Cool nights and sunny days can help.",
+      "narration": "Bright days and cool nights often favor strong red colors in some species. Weather conditions influence how intense the display becomes."
+    },
+    {
+      "image": "screen-04",
+      "title": "RED IS NOT IN EVERY LEAF",
+      "caption": "Some trees make more anthocyanin than others.",
+      "narration": "Maples can become brilliant red, while other species turn mostly yellow or brown. Their pigment chemistry is different."
+    },
+    {
+      "image": "screen-05",
+      "title": "WHY MAKE RED PIGMENT?",
+      "caption": "Scientists study several possible benefits.",
+      "narration": "Anthocyanins may help protect leaves from light stress while nutrients are being recovered. Researchers continue to study their roles."
+    },
+    {
+      "image": "screen-06",
+      "title": "A COLORFUL MIX",
+      "caption": "Red can combine with yellow and orange.",
+      "narration": "When anthocyanins appear alongside carotenoids, leaves can show scarlet, orange-red, and purple tones across the same tree."
+    }
+  ]
+}

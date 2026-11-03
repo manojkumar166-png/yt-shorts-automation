@@ -1,42 +1,23 @@
-# Canva Series — separate 30-second tutorial pipeline
+# Tutorial video series — separate from the original Shorts pipeline
 
-This directory is independent of the existing ~70-second Shorts generator. It reads user-provided screenshots committed to GitHub, builds a 9:16 MP4, and does not edit or replace the original generator.
+This folder contains an independent 30-second vertical video pipeline. The existing Shorts generator and its original workflow are intentionally left unchanged.
 
-## Day 1 inputs
+## Current 48-image series
 
-Add six screenshots (PNG/JPG/JPEG/WEBP) to `canva-series/assets/day01/` with these exact names:
+The uploaded archive contains 48 numbered scenes about **Why Leaves Change Color**. The successful preparation run extracted all 48 images with zero unreadable files. They are kept in filename order and split into eight consecutive groups of six.
 
-- `screen-01.png` — open Canva / start a project
-- `screen-02.png` — import your screenshots or clips
-- `screen-03.png` — arrange the timeline
-- `screen-04.png` — add titles or captions
-- `screen-05.png` — add voiceover / sound
-- `screen-06.png` — export settings
+Eight editable storyboards live in `storyboards/leaf-color/day01.json` through `day08.json`. Each has six titles, captions, and narration beats. The renderer creates one 720×1280, 30 fps, 30-second MP4 per storyboard.
 
-You can use JPG/JPEG/WEBP instead of PNG; keep the basename (for example `screen-01.jpg`). Upload them by committing files to this repository. Use screenshots you own or have permission to use, and remove private information before committing.
+## Generate all eight videos
 
-Optional: add `canva-series/assets/logo.png` to brand the video.
+1. Open **Actions → Render All Leaf Color Tutorial Shorts**.
+2. Select **Run workflow**.
+3. Keep the preparation run ID at `41628877178` (or enter another successful preparation run ID).
+4. Wait for the workflow to finish successfully.
+5. Download the artifact named `why-leaves-change-color-8-shorts`. It contains `day01.mp4` through `day08.mp4`.
 
-## Edit the content
+The workflow downloads the prepared image artifact, stages six scenes per day, renders all eight MP4s, validates each file, and uploads the finished set for 14 days.
 
-Edit `canva-series/storyboards/day01.json` before running. Each of its six scenes has a title, short on-screen caption, and narration. The default storyboard is an editable example for a first Canva mobile edit; replace the wording to match your actual screenshots.
+## Existing renderer
 
-## Run Day 1
-
-1. Open **Actions → Canva Day 1 Video**.
-2. Choose **Run workflow**.
-3. Leave day number at `1` for the first video.
-4. Download the `canva-day-01` artifact after the run succeeds.
-
-The renderer creates a 720×1280 (9:16), 30-second H.264/AAC MP4 at `canva-series/output/day01.mp4`. It applies a slow Ken Burns movement to each screenshot, readable title/caption overlays, six short Edge-TTS narration segments, and a quiet generated audio bed. The MP4 is uploaded as an Actions artifact; it is not committed to the repository.
-
-## Local run
-
-Requires Python 3.11+, FFmpeg/FFprobe, and the repository requirements:
-
-```bash
-pip install -r requirements.txt
-python canva-series/render_day.py --day 1
-```
-
-The first version is deliberately deterministic: storyboard copy and screenshots come from GitHub, so the same inputs can be reviewed and rerun. It does not operate Canva Mobile itself; it produces a polished MP4 for final optional trimming/polish in Canva.
+`render_day.py` is reused without changing its behavior. The eight new storyboards and the batch workflow are additive. The original Shorts generator and original workflow are not modified.

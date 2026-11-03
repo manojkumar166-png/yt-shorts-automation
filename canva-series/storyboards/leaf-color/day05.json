@@ -1,0 +1,48 @@
+{
+  "day": 5,
+  "title": "Why Leaves Change Color: Inside the Leaf",
+  "output": "day05.mp4",
+  "duration_seconds": 30,
+  "fps": 30,
+  "width": 720,
+  "height": 1280,
+  "voice": "en-US-AriaNeural",
+  "scenes": [
+    {
+      "image": "screen-01",
+      "title": "A LEAF IS A LIVING SYSTEM",
+      "caption": "Color change begins inside leaf tissues.",
+      "narration": "A leaf is made of many layers and cell types. As autumn develops, changes inside those tissues alter the colors we see."
+    },
+    {
+      "image": "screen-02",
+      "title": "CHLOROPLASTS CHANGE",
+      "caption": "Photosynthetic structures are dismantled.",
+      "narration": "As a tree prepares for winter, it dismantles parts of its photosynthetic system and recovers useful nutrients from the leaf."
+    },
+    {
+      "image": "screen-03",
+      "title": "NUTRIENTS ARE RECYCLED",
+      "caption": "The tree reclaims valuable materials.",
+      "narration": "Nitrogen and other nutrients are moved out of the leaf and stored in branches, trunks, and roots for future growth."
+    },
+    {
+      "image": "screen-04",
+      "title": "THE LEAF'S VASCULAR NETWORK",
+      "caption": "Veins move water and sugars.",
+      "narration": "Leaf veins contain transport tissues. They connect the leaf to the rest of the tree while the plant is active."
+    },
+    {
+      "image": "screen-05",
+      "title": "A CLOSING CONNECTION",
+      "caption": "A separation layer develops near the stem.",
+      "narration": "Near the base of the leaf, special cells form an abscission layer. This helps prepare the leaf to detach safely."
+    },
+    {
+      "image": "screen-06",
+      "title": "A CAREFUL SHUTDOWN",
+      "caption": "The tree saves resources before winter.",
+      "narration": "The color show is part of a practical process: reclaim nutrients, reduce water loss, and prepare the tree for cold conditions."
+    }
+  ]
+}

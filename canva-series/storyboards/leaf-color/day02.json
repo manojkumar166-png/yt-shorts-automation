@@ -1,0 +1,48 @@
+{
+  "day": 2,
+  "title": "Why Leaves Change Color: The Autumn Signal",
+  "output": "day02.mp4",
+  "duration_seconds": 30,
+  "fps": 30,
+  "width": 720,
+  "height": 1280,
+  "voice": "en-US-AriaNeural",
+  "scenes": [
+    {
+      "image": "screen-01",
+      "title": "YELLOW AND ORANGE APPEAR",
+      "caption": "As chlorophyll fades, other pigments become visible.",
+      "narration": "As autumn approaches, days grow shorter and temperatures often fall. Many trees begin preparing their leaves for the season ahead."
+    },
+    {
+      "image": "screen-02",
+      "title": "CHLOROPHYLL BREAKS DOWN",
+      "caption": "The green pigment is no longer replaced as quickly.",
+      "narration": "Trees slow the production of chlorophyll. Existing chlorophyll breaks down, so the green color gradually disappears."
+    },
+    {
+      "image": "screen-03",
+      "title": "A SEASONAL TRANSITION",
+      "caption": "The same leaf can change over several weeks.",
+      "narration": "Color change is gradual. A leaf may shift from green to pale yellow, then become bright gold as its pigments are revealed."
+    },
+    {
+      "image": "screen-04",
+      "title": "AUTUMN LIGHT",
+      "caption": "Sunlight shines through changing leaves.",
+      "narration": "The warm glow of autumn comes from light interacting with pigments in the leaf. The colors do not simply appear overnight."
+    },
+    {
+      "image": "screen-05",
+      "title": "A FOREST OF GOLD",
+      "caption": "Different trees change at different times.",
+      "narration": "Species, weather, and local conditions all affect timing. That is why one hillside can show several stages of autumn at once."
+    },
+    {
+      "image": "screen-06",
+      "title": "SHORTER DAYS",
+      "caption": "Day length is an important seasonal cue.",
+      "narration": "The shortening day length helps many trees sense that winter is coming. It is one of the signals that starts the change."
+    }
+  ]
+}

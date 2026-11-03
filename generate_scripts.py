@@ -130,7 +130,7 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
                 for item in items:
                     if not isinstance(item, dict):
                         continue
-                    topic = re.sub(r"\\s+", " ", str(item.get("topic", "")).strip())
+                    topic = re.sub(r"\s+", " ", str(item.get("topic", "")).strip())
                     normalized_topic = " ".join(topic.split()).casefold()
                     category = str(item.get("category", "other")).strip().lower()
                     hooks, hook = item.get("hook_alternatives"), str(item.get("selected_hook", "")).strip()

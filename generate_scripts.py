@@ -7,7 +7,7 @@ import requests
 BANK_FILE = Path("script_bank.json")
 BANK_FILES = (Path("script_bank.json"), Path("scripts_bank.json"))
 API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
-DEFAULT_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+DEFAULT_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 BATCH_SIZE = int(os.getenv("GEMINI_SCRIPT_BATCH_SIZE", "10"))
 MIN_SCORE = int(os.getenv("MIN_SCRIPT_QUALITY_SCORE", "70"))
 CATEGORIES = {"science", "nature", "history", "technology", "mystery", "animals", "space", "other"}

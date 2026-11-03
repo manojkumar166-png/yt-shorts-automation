@@ -148,7 +148,7 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
 
     final.write_videofile(output_path, fps=30, codec="libx264",
                           audio_codec="aac", preset="medium", bitrate="8000k", threads=4, 
-                          ffmpeg_params=["-pix_fmt", "yuv420p"], logger="bar")
+                          ffmpeg_params=["-pix_fmt", "yuv420p"], logger=None)
 
     for c in audio_clips:
         c.close()

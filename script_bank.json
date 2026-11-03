@@ -331,5 +331,47 @@
       "The extent to which solar atmospheric tides alone slowed Venus’s rotation is still debated among researchers."
     ],
     "quality_score": 90
+  },
+  {
+    "topic": "Why giant squids have the biggest eyes in the animal kingdom",
+    "category": "nature",
+    "hook_alternatives": [
+      "What makes the giant squid's eyes the size of dinner plates?",
+      "Imagine a predator seeing in darkness with lenses bigger than a soccer ball.",
+      "How can a creature spot prey miles away in the pitch‑black ocean?"
+    ],
+    "hook": "What makes the giant squid's eyes the size of dinner plates?",
+    "facts": [
+      "Giants squid possess eyes up to 27 centimeters across, the largest known in any animal, acting like massive telescopes that gather scarce photons from the abyssal darkness for enhanced vision.",
+      "Their eyes feature a wide, circular pupil and a reflective tapetum lucidum behind the retina, bouncing light back through photoreceptors to boost sensitivity in near‑total darkness during deep‑sea hunting sessions.",
+      "While their massive lenses capture abundant light, the sheer size reduces visual acuity, meaning giant squids see silhouettes rather than fine details, perfect for detecting moving shadows of potential prey.",
+      "Evolution favored these gigantic eyes because many deep‑sea organisms emit faint bioluminescent glows; spotting such tiny flashes can mean the difference between a successful hunt and starvation for the squid.",
+      "Thanks to this optical marvel, a giant squid can detect a struggling fish or glowing squid from over a hundred meters away, turning darkness into a hunting advantage for survival."
+    ],
+    "image_queries": [
+      "Close‑up of a giant squid eye, illuminated, showing massive pupil, vertical 9:16",
+      "Side angle of the same squid eye, water droplets glistening, vertical 9:16",
+      "Giant squid eye next to a dinner plate for scale, top view, vertical 9:16",
+      "Underwater scene showing giant squid eye beside a human hand for size reference, vertical 9:16",
+      "Illustration of squid retina with reflective tapetum lucidum layer, glowing effect, vertical 9:16",
+      "Cross‑section view of squid eye highlighting tapetum behind retina, labeled, vertical 9:16",
+      "Giant squid eye viewing a faint silhouette of a fish in dark water, vertical 9:16",
+      "Artistic rendering of squid perceiving shadowy shapes, low contrast, vertical 9:16",
+      "Bioluminescent tiny organism emitting blue glow near squid eye, deep sea background, vertical 9:16",
+      "Squid eye focusing on multiple tiny glowing specks, representing prey, vertical 9:16",
+      "Giant squid lunging toward a fish 100 meters away, eye illuminated, vertical 9:16",
+      "Scene showing distance markers in deep sea, squid eye detecting distant prey, vertical 9:16"
+    ],
+    "sources": [
+      "https://www.nature.com/articles/s41598-019-45345-0",
+      "https://www.nationalgeographic.com/animals/invertebrates/facts/giant-squid",
+      "https://www.scientificamerican.com/article/how-giant-squid-see/",
+      "https://www.britannica.com/animal/giant-squid",
+      "https://www.marinebio.org/species/giant-squid/"
+    ],
+    "uncertain_claims": [
+      "The claim that giant squids can detect prey from over a hundred meters away is based on indirect observations and may vary among individuals."
+    ],
+    "quality_score": 90
   }
 ]

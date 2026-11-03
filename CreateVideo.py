@@ -83,6 +83,7 @@ def _cinematic_image_clip(image_path, duration, start, motion_seed=0, transition
         return np.asarray(pil.crop((offset_x, offset_y, offset_x + TARGET_W, offset_y + TARGET_H)))
 
     clip = clip.set_make_frame(camera_frame).set_duration(duration)
+    clip.size = (TARGET_W, TARGET_H)
     # Rich but restrained contrast/saturation for a cinematic social-video look.
     clip = colorx(clip, 1.08)
     clip = lum_contrast(clip, lum=0, contrast=0.16, contrast_thr=127)

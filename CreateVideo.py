@@ -73,20 +73,25 @@ def _cinematic_image_clip(image_path, duration, start, motion_seed=0, transition
     direction_x, direction_y = rng.choice((-1, 1)), rng.choice((-1, 1))
     zoom_start, zoom_end = rng.uniform(1.02, 1.07), rng.uniform(1.13, 1.19)
 
-    # Capture the source frame getter BEFORE replacing the clip's frame
-    # function. Calling clip.get_frame() from camera_frame after set_make_frame()
-    # recursively calls camera_frame until Python raises RecursionError.
-    source_get_frame = clip.get_frame
+    # MoviePy's get_frame() resolves self.make_frame dynamically. Saving a
+    # bound get_frame method is therefore NOT safe: set_make_frame() mutates
+    # the same clip and the saved method would call camera_frame recursively.
+    # Snapshot the actual frame callable before installing our transformation.
+    source_make_frame = clip.make_frame
 
     def camera_frame(t):
-        progress = min(max(t / max(duration, 0.001), 0.0), 1.0)
+        progress = min(max(float(t) / max(float(duration), 0.001), 0.0), 1.0)
         zoom = zoom_start + (zoom_end - zoom_start) * progress
-        frame = source_get_frame(t)
-        pil = Image.fromarray(frame)
-        pil = pil.resize((int(TARGET_W * zoom), int(TARGET_H * zoom)), Image.Resampling.LANCZOS)
+        frame = source_make_frame(t)
+        pil = Image.fromarray(np.asarray(frame).astype(np.uint8))
+        target_w = max(TARGET_W, int(TARGET_W * zoom))
+        target_h = max(TARGET_H, int(TARGET_H * zoom))
+        pil = pil.resize((target_w, target_h), Image.Resampling.LANCZOS)
         max_x, max_y = pil.width - TARGET_W, pil.height - TARGET_H
         offset_x = int(max_x * (0.5 + 0.22 * direction_x * progress))
         offset_y = int(max_y * (0.5 + 0.22 * direction_y * progress))
+        offset_x = min(max(offset_x, 0), max_x)
+        offset_y = min(max(offset_y, 0), max_y)
         return np.asarray(pil.crop((offset_x, offset_y, offset_x + TARGET_W, offset_y + TARGET_H)))
 
     clip = clip.set_make_frame(camera_frame).set_duration(duration)

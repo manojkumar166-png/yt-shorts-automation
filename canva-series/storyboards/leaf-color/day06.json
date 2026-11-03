@@ -12,37 +12,37 @@
       "image": "screen-01",
       "title": "WEATHER SHAPES THE SHOW",
       "caption": "Temperature and sunlight affect autumn color.",
-      "narration": "The calendar is only part of the story. Temperature, sunlight, moisture, and tree health all influence autumn color."
+      "narration": "Sunlight, temperature, moisture, and tree health affect color."
     },
     {
       "image": "screen-02",
       "title": "SUNNY DAYS, COOL NIGHTS",
       "caption": "These conditions can boost bright reds.",
-      "narration": "For some trees, sunny days help produce sugars while cool nights slow their movement. This can encourage red pigment formation."
+      "narration": "Sunny days and cool nights can encourage bright reds."
     },
     {
       "image": "screen-03",
       "title": "CLOUDS AND RAIN",
       "caption": "Wet or warm weather can change the display.",
-      "narration": "Cloudy, rainy, or unusually warm weather can affect pigment production and timing. Each autumn is a little different."
+      "narration": "Cloudy or unusually warm weather can change the display."
     },
     {
       "image": "screen-04",
       "title": "DAY LENGTH MATTERS",
       "caption": "Shorter days signal the seasonal shift.",
-      "narration": "Trees can sense changing day length. This reliable seasonal cue helps coordinate the transition toward dormancy."
+      "narration": "Shorter days help trees prepare for dormancy."
     },
     {
       "image": "screen-05",
       "title": "FROST CHANGES THE TIMELINE",
       "caption": "A hard freeze can end the display quickly.",
-      "narration": "A strong early frost can damage leaf tissues and shorten the color display. Gentle conditions often allow a longer show."
+      "narration": "A hard early frost can end the show quickly."
     },
     {
       "image": "screen-06",
       "title": "ONE FOREST, MANY TIMELINES",
       "caption": "Different species respond in different ways.",
-      "narration": "Trees do not all change together. Species, elevation, exposure, and local weather create a moving patchwork of color."
+      "narration": "Species and local weather create a patchwork of color."
     }
   ]
 }

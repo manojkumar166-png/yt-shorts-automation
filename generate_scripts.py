@@ -33,7 +33,7 @@ def generate_scripts(existing_topics, count=BATCH_SIZE):
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
     if not api_key:
         raise RuntimeError("GEMINI_API_KEY is missing. Add it in repository Actions secrets.")
-    blocked = sorted({re.sub(r"\\s+", " ", str(x)).strip().casefold() for x in existing_topics if str(x).strip()})
+    blocked = sorted({" ".join(str(x).split()).casefold() for x in existing_topics if str(x).strip()})
     prompt = f"""
 Create exactly {count} original high-retention Shorts scripts.
 For each: draft 3 distinct 8-16 word hook alternatives, select the strongest
@@ -71,6 +71,7 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
                 if not isinstance(item, dict):
                     continue
                 topic = re.sub(r"\s+", " ", str(item.get("topic", "")).strip())
+                normalized_topic = " ".join(topic.split()).casefold()
                 category = str(item.get("category", "other")).strip().lower()
                 hooks, hook = item.get("hook_alternatives"), str(item.get("selected_hook", "")).strip()
                 facts, images = item.get("facts"), item.get("image_queries")
@@ -119,18 +120,18 @@ def append_fresh_scripts(existing_topics, count=BATCH_SIZE):
             bank.extend(contents)
 
     known = {
-        re.sub(r"\\s+", " ", str(item.get("topic", "")).strip()).casefold()
+        " ".join(str(item.get("topic", "")).split()).casefold()
         for item in bank if isinstance(item, dict) and item.get("topic")
     }
     blocked = {
-        re.sub(r"\\s+", " ", str(topic)).strip().casefold()
+        " ".join(str(topic).split()).casefold()
         for topic in existing_topics if str(topic).strip()
     }
     blocked.update(known)
     fresh = generate_scripts(blocked, count=count)
     added = [
         item for item in fresh
-        if re.sub(r"\\s+", " ", item["topic"]).strip().casefold() not in known
+        if " ".join(item["topic"].split()).casefold() not in known
     ]
     if len(added) != count:
         raise RuntimeError(f"Expected {count} entirely new topics; got {len(added)}. Refusing to use bank topics.")

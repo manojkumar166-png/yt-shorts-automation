@@ -75,7 +75,7 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
                        "tools": [{"google_search": {}}],
                        "generationConfig": {"temperature": 0.7}}
             provider_label = "Gemini"
-        else:
+        elif provider == "groq":
             url = "https://api.groq.com/openai/v1/chat/completions"
             headers = {"Authorization": f"Bearer {groq_api_key}", "Content-Type": "application/json"}
             groq_prompt = prompt.replace("Research claims using Google Search.", "Do not claim to have browsed or verified sources live. Provide source URLs only when you are confident they are real; uncertain claims must be listed.")

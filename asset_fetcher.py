@@ -18,14 +18,14 @@ def _make_ai_prompt(topic, query, index):
     )
 
 
-def ensure_images(script_id, queries, use_ai=True):
-    """Create/cache four AI visuals: anonymous OVHcloud first, AI Horde second."""
+def ensure_images(script_id, queries, use_ai=True, num_images=6):
+    """Create/cache one 9:16 AI visual per narration section."""
     d = ASSETS / script_id
     d.mkdir(parents=True, exist_ok=True)
     image_paths = []
 
     queries = list(queries or [])
-    while len(queries) < 4:
+    while len(queries) < num_images:
         queries.append("cinematic abstract atmosphere")
 
     use_ovh = bool(use_ai)
@@ -34,7 +34,7 @@ def ensure_images(script_id, queries, use_ai=True):
     if use_ovh:
         from ovhcloud_image import generate_image as generate_ovh
 
-    for i in range(4):
+    for i in range(num_images):
         filename = d / f"bg_{i}.jpg"
         source_marker = d / f"bg_{i}.source"
         cached_source = (

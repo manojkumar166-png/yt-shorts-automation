@@ -32,8 +32,9 @@ def _quality_score(item):
 def generate_scripts(existing_topics, count=BATCH_SIZE):
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
     groq_api_key = os.getenv("GROQ_API_KEY", "").strip()
-    if not api_key and not groq_api_key:
-        raise RuntimeError("Add GEMINI_API_KEY or GROQ_API_KEY in repository Actions secrets.")
+    llm7_api_key = os.getenv("LLM7_API_KEY", "").strip()
+    if not api_key and not groq_api_key and not llm7_api_key:
+        print("  [LLM7] Anonymous access enabled; no API key required.")
     blocked = sorted({" ".join(str(x).split()).casefold() for x in existing_topics if str(x).strip()})
     prompt = f"""
 Create exactly {count} original high-retention Shorts scripts.
@@ -61,6 +62,8 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
     ]
     if groq_api_key:
         models.append(("groq", "openai/gpt-oss-120b"))
+    # LLM7 supports anonymous turbo access; an optional token raises limits.
+    models.append(("llm7", "gpt-oss:20b"))
     errors = []
     for provider, model in models:
         if provider == "gemini" and not api_key:
@@ -80,6 +83,19 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
             payload = {"model": model, "messages": [{"role": "user", "content": groq_prompt}],
                        "temperature": 0.7, "response_format": {"type": "json_object"}}
             provider_label = "Groq"
+        elif provider == "llm7":
+            url = "https://api.llm7.io/v1/chat/completions"
+            headers = {"Content-Type": "application/json"}
+            if llm7_api_key:
+                headers["Authorization"] = f"Bearer {llm7_api_key}"
+            llm7_prompt = prompt.replace("Research claims using Google Search.", "Do not claim to have browsed or verified sources live. Provide source URLs only when confident they are real; list uncertain claims.")
+            llm7_prompt = llm7_prompt.replace("Return ONLY JSON array.", "Return ONLY a valid JSON object with a single key scripts whose value is an array of script objects.")
+            payload = {"model": model, "messages": [{"role": "user", "content": llm7_prompt}],
+                       "temperature": 0.7, "response_format": {"type": "json_object"}}
+            if llm7_api_key:
+                provider_label = "LLM7 (token)"
+            else:
+                provider_label = "LLM7 (anonymous)"
         print(f"  [{provider_label}] Trying model: {model}")
         for attempt in range(2):
             try:
@@ -152,7 +168,7 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
                 # Invalid output/quality is not fixed by switching models repeatedly.
                 errors.append(f"{model}: {exc}")
                 break
-    raise RuntimeError("All configured LLM providers failed. " + " | ".join(errors[-7:]))
+    raise RuntimeError("All configured LLM providers failed. " + " | ".join(errors[-9:]))
 
 def append_fresh_scripts(existing_topics, count=BATCH_SIZE):
     # Read both filename spellings if present; topics in either bank are forbidden.

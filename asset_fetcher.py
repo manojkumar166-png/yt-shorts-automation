@@ -1,99 +1,133 @@
 import os
 import requests
-import json
 from PIL import Image
 from io import BytesIO
 from pathlib import Path
 
 ASSETS = Path("assets")
 
-def ensure_images(script_id, queries):
-    """Downloads images using your exact Wikipedia/Pixabay logic and caches them."""
+
+def _make_ai_prompt(topic, query, index):
+    subject = (query or topic).replace("_", " ").strip()
+    return (
+        f"Create a premium cinematic visual for a vertical YouTube Short about {topic}. "
+        f"Main subject: {subject}. Scene variation {index + 1}. "
+        "High-detail professional photography, dramatic but natural lighting, "
+        "strong composition, realistic textures, visually clear focal subject, "
+        "rich depth, no text, no captions, no watermark. Compose for a 9:16 "
+        "portrait video; keep the main subject near the center so it survives cropping."
+    )
+
+
+def ensure_images(script_id, queries, use_ai=True):
+    """Create/cache four images. OVHcloud is optional; stock sources remain fallback."""
     d = ASSETS / script_id
     d.mkdir(parents=True, exist_ok=True)
-    
     image_paths = []
     downloaded_urls = set()
-    
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    }
-    
+
+    queries = list(queries or [])
     while len(queries) < 4:
         queries.append("abstract background")
-        
+
+    use_ovh = use_ai and bool(os.getenv("OVH_AI_ENDPOINTS_ACCESS_TOKEN", "").strip())
+    if use_ovh:
+        from ovhcloud_image import generate_image
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (compatible; ShortsImageFetcher/1.0)"
+    }
+
     for i in range(4):
         filename = d / f"bg_{i}.jpg"
-        
-        # If image is already cached, skip downloading!
         if filename.exists():
-            image_paths.append(str(filename))
-            continue
-            
-        query = queries[i].replace("_", " ").replace("*", "").strip()
-        print(f"  [Background] Searching for: {query}")
+            try:
+                with Image.open(filename) as cached:
+                    cached.verify()
+                image_paths.append(str(filename))
+                continue
+            except Exception:
+                filename.unlink(missing_ok=True)
+
+        query = str(queries[i]).replace("_", " ").replace("*", "").strip()
         success = False
-        
-        # Method 1: Wikipedia
-        try:
-            safe_query = query.replace(" ", "_")
-            url = f"https://en.wikipedia.org/api/rest_v1/page/media-list/{safe_query}"
-            r = requests.get(url, headers=headers, timeout=15)
-            if r.status_code == 200:
-                items = r.json().get("items", [])
-                for item in items:
-                    if item.get("type") == "image" and item.get("srcset"):
+
+        # 1. OVHcloud SDXL (opt-in via secret; generated only for the active video).
+        if use_ovh:
+            try:
+                prompt = _make_ai_prompt(script_id.replace("_", " "), query, i)
+                generate_image(prompt, str(filename))
+                image_paths.append(str(filename))
+                print(f"  [Background] Image {i + 1} generated (OVHcloud SDXL).")
+                success = True
+            except Exception as exc:
+                print(f"  [Background] OVHcloud failed for image {i + 1}: {exc}")
+
+        # 2. Wikipedia media search.
+        if not success:
+            try:
+                safe_query = query.replace(" ", "_")
+                url = f"https://en.wikipedia.org/api/rest_v1/page/media-list/{safe_query}"
+                response = requests.get(url, headers=headers, timeout=15)
+                if response.status_code == 200:
+                    for item in response.json().get("items", []):
+                        if item.get("type") != "image" or not item.get("srcset"):
+                            continue
                         img_url = item["srcset"][0]["src"]
                         if img_url.startswith("//"):
                             img_url = "https:" + img_url
-                            
-                        if img_url in downloaded_urls: continue
-                        
-                        res = requests.get(img_url, headers=headers, timeout=20)
-                        res.raise_for_status()
-                        
-                        img = Image.open(BytesIO(res.content)).convert('RGB')
-                        img.save(filename, "JPEG", quality=100) # KEEPS ORIGINAL ASPECT RATIO
-                        
-                        image_paths.append(str(filename))
+                        if img_url in downloaded_urls:
+                            continue
+                        image_response = requests.get(img_url, headers=headers, timeout=25)
+                        image_response.raise_for_status()
+                        image = Image.open(BytesIO(image_response.content)).convert("RGB")
+                        image.save(filename, "JPEG", quality=94, optimize=True)
                         downloaded_urls.add(img_url)
-                        print(f"  [Background] Image {i+1} downloaded (Wikipedia).")
+                        image_paths.append(str(filename))
+                        print(f"  [Background] Image {i + 1} downloaded (Wikipedia).")
                         success = True
                         break
-        except Exception as e:
-            print(f"  [Background] Wikipedia failed: {e}")
+            except Exception as exc:
+                print(f"  [Background] Wikipedia failed: {exc}")
 
-        # Method 2: Pixabay
+        # 3. Pixabay.
         if not success:
             pixabay_key = os.getenv("PIXABAY_API_KEY", "").strip()
             if pixabay_key:
                 try:
-                    url = "https://pixabay.com/api/"
-                    params = {"key": pixabay_key, "q": query, "image_type": "photo", "orientation": "vertical", "per_page": 5, "safesearch": "true"}
-                    r = requests.get(url, params=params, timeout=15)
-                    hits = r.json().get("hits", [])
-                    for hit in hits:
+                    response = requests.get(
+                        "https://pixabay.com/api/",
+                        params={
+                            "key": pixabay_key,
+                            "q": query,
+                            "image_type": "photo",
+                            "orientation": "vertical",
+                            "per_page": 8,
+                            "safesearch": "true",
+                        },
+                        timeout=20,
+                    )
+                    response.raise_for_status()
+                    for hit in response.json().get("hits", []):
                         img_url = hit.get("largeImageURL")
-                        if not img_url or img_url in downloaded_urls: continue
-                        
-                        res = requests.get(img_url, timeout=20)
-                        res.raise_for_status()
-                        img = Image.open(BytesIO(res.content)).convert('RGB')
-                        img.save(filename, "JPEG", quality=100) # KEEPS ORIGINAL ASPECT RATIO
-                        
-                        image_paths.append(str(filename))
+                        if not img_url or img_url in downloaded_urls:
+                            continue
+                        image_response = requests.get(img_url, timeout=25)
+                        image_response.raise_for_status()
+                        image = Image.open(BytesIO(image_response.content)).convert("RGB")
+                        image.save(filename, "JPEG", quality=94, optimize=True)
                         downloaded_urls.add(img_url)
-                        print(f"  [Background] Image {i+1} downloaded (Pixabay).")
+                        image_paths.append(str(filename))
+                        print(f"  [Background] Image {i + 1} downloaded (Pixabay).")
                         success = True
                         break
-                except:
-                    pass
+                except Exception as exc:
+                    print(f"  [Background] Pixabay failed: {exc}")
 
-        # Method 3: Gradient Fallback
+        # 4. Safe visual fallback.
         if not success:
-            print(f"  [Background] Image {i+1} failed. Using gradient.")
-            img = Image.new('RGB', (1080, 1920), color=(10, 12, 30))
-            img.save(filename, "JPEG")
+            print(f"  [Background] Image {i + 1} unavailable. Using gradient fallback.")
+            Image.new("RGB", (1080, 1920), color=(10, 12, 30)).save(filename, "JPEG")
             image_paths.append(str(filename))
-            
+
     return image_paths

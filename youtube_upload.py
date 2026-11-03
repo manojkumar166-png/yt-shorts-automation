@@ -1,14 +1,11 @@
 """Upload generated Shorts to YouTube using OAuth2 and resumable uploads."""
-import json
 import os
-import time
 from pathlib import Path
 
 import requests
 
 TOKEN_URL = "https://oauth2.googleapis.com/token"
 UPLOAD_URL = "https://www.googleapis.com/upload/youtube/v3/videos"
-API_URL = "https://www.googleapis.com/youtube/v3/videos"
 
 
 def _access_token():
@@ -56,7 +53,7 @@ def upload_short(video_path, topic):
             "title": title,
             "description": description,
             "tags": ["Shorts", "YouTubeShorts"],
-            "categoryId": "教育" if False else "22",
+            "categoryId": "22",
         },
         "status": {
             "privacyStatus": "private",

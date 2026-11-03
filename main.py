@@ -54,7 +54,7 @@ def get_next_script(state):
     return eligible[0] if eligible else None
 
 
-def generate_more_scripts(state):
+def generate_more_scripts(state, count):
     from generate_scripts import append_fresh_scripts
 
     bank = load_bank()
@@ -64,7 +64,7 @@ def generate_more_scripts(state):
     blocked.extend(state["done"])
     blocked.extend(topic for topic, attempts in state["failed"].items()
                    if attempts >= MAX_FAILS)
-    return append_fresh_scripts(blocked)
+    return append_fresh_scripts(blocked, count=count)
 
 
 def generate_video(script_data):
@@ -112,21 +112,16 @@ def main():
         print("Already made the daily quota. Stopping.")
         return
 
-    for index in range(needed):
-        script_data = get_next_script(state)
-        if not script_data:
-            print("  [Script Bank] No unused scripts. Asking Gemini for fresh scripts...")
-            try:
-                generate_more_scripts(state)
-            except Exception as exc:
-                print(f"  [Gemini] Could not replenish script bank: {exc}")
-                break
-            script_data = get_next_script(state)
+    # Generate a completely fresh batch for this run; never fall back to older
+    # queued scripts. This makes every day's planned videos new Gemini scripts.
+    print(f"  [Gemini] Generating {needed} brand-new scripts for today's videos...")
+    try:
+        todays_scripts = generate_more_scripts(state, needed)
+    except Exception as exc:
+        print(f"  [Gemini] Daily script generation failed; stopping rather than reusing old scripts: {exc}")
+        return
 
-        if not script_data:
-            print("No unused scripts available. Stopping without recycling old topics.")
-            break
-
+    for index, script_data in enumerate(todays_scripts):
         topic = script_data["topic"]
         print(f"\n--- Making Video {index + 1}/{needed}: {topic} ---")
         try:

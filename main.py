@@ -133,6 +133,15 @@ def main():
         print(f"\n--- Making Video {index + 1}/{needed}: {topic} ---")
         try:
             video_path = generate_video(script_data)
+
+            # Upload the original render to YouTube with privacy explicitly set to Private.
+            if os.getenv("YOUTUBE_UPLOAD_ENABLED", "true").strip().lower() in ("1", "true", "yes"):
+                from youtube_upload import upload_short
+                youtube_video_id = upload_short(video_path, topic)
+                print(f"  [YouTube] Private upload complete: https://www.youtube.com/watch?v={youtube_video_id}")
+            else:
+                print("  [YouTube] Upload disabled by YOUTUBE_UPLOAD_ENABLED.")
+
             telegram_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
             telegram_chat_id = os.getenv("TELEGRAM_CHAT_ID", "").strip()
             if telegram_token and telegram_chat_id:

@@ -33,22 +33,8 @@ jobs:
       - name: Install Python Dependencies
         run: pip install -r requirements.txt
 
-      - name: Prefetch Stock Images (Look ahead 14 scripts)
-        env:
-          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
-        run: python prefetch.py
-        continue-on-error: true
-
-      - name: Commit Prefetched Images
-        run: |
-          git config user.name "shorts-bot"
-          git config user.email "shorts-bot@users.noreply.github.com"
-          git add assets/
-          git diff --cached --quiet || (git commit -m "cache images [skip ci]" && git pull --rebase && git push)
-
       - name: Generate Videos
         env:
-          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
           OVH_AI_ENDPOINTS_ACCESS_TOKEN: ${{ secrets.OVH_AI_ENDPOINTS_ACCESS_TOKEN }}
         run: python main.py
 

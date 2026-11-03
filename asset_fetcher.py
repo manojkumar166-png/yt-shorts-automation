@@ -19,7 +19,7 @@ def _make_ai_prompt(topic, query, index):
 
 
 def ensure_images(script_id, queries, use_ai=True):
-    """Create/cache four AI visuals: OVHcloud first, anonymous AI Horde second."""
+    """Create/cache four AI visuals: anonymous OVHcloud first, AI Horde second."""
     d = ASSETS / script_id
     d.mkdir(parents=True, exist_ok=True)
     image_paths = []
@@ -28,8 +28,7 @@ def ensure_images(script_id, queries, use_ai=True):
     while len(queries) < 4:
         queries.append("cinematic abstract atmosphere")
 
-    ovh_token = os.getenv("OVH_AI_ENDPOINTS_ACCESS_TOKEN", "").strip()
-    use_ovh = use_ai and bool(ovh_token)
+    use_ovh = bool(use_ai)
 
     from ai_horde_image import generate_image as generate_horde
     if use_ovh:
@@ -47,8 +46,9 @@ def ensure_images(script_id, queries, use_ai=True):
             try:
                 with Image.open(filename) as cached:
                     cached.verify()
-                # Prefer OVHcloud whenever configured. Otherwise reuse either
-                # provider's valid AI image; replace old stock/legacy caches.
+                # Prefer OVHcloud-generated images. Reuse either valid AI
+                # provider's cache when OVH is not requested; replace old
+                # stock/legacy caches.
                 if not (use_ovh and cached_source != "ovhcloud") and cached_source in {
                     "ovhcloud", "ai_horde"
                 }:
@@ -65,10 +65,10 @@ def ensure_images(script_id, queries, use_ai=True):
             try:
                 generate_ovh(prompt, str(filename))
                 source_marker.write_text("ovhcloud", encoding="utf-8")
-                print(f"  [Background] Image {i + 1} generated (OVHcloud SDXL).")
+                print(f"  [Background] Image {i + 1} generated (anonymous OVHcloud SDXL).")
                 generated = True
             except Exception as exc:
-                print(f"  [Background] OVHcloud failed for image {i + 1}: {exc}")
+                print(f"  [Background] Anonymous OVHcloud failed for image {i + 1}: {exc}")
 
         if not generated:
             try:

@@ -130,7 +130,19 @@ async def create_voiceover(scenes: list[dict], voice: str, output: Path) -> bool
                 part = temp_dir / f"voice-{index:02d}.mp3"
                 communicate = edge_tts.Communicate(scene["narration"], voice)
                 await communicate.save(str(part))
-                segments.append(part)
+                # Fit every narration beat into its five-second visual scene.
+                probe = subprocess.run(
+                    ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                     "-of", "default=noprint_wrappers=1:nokey=1", str(part)],
+                    check=True, capture_output=True, text=True
+                )
+                source_duration = max(float(probe.stdout.strip()), 0.1)
+                speed = max(1.0, source_duration / 4.55)
+                fitted = temp_dir / f"voice-fit-{index:02d}.mp3"
+                run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                     "-i", str(part), "-af", f"atempo={min(speed, 2.0):.3f},atrim=0:4.65",
+                     "-c:a", "libmp3lame", "-q:a", "4", str(fitted)])
+                segments.append(fitted)
             listing = temp_dir / "concat.txt"
             listing.write_text("".join(f"file '{p.as_posix()}'\n" for p in segments), encoding="utf-8")
             run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", str(listing), "-c:a", "libmp3lame", "-q:a", "4", str(output)])

@@ -14,6 +14,7 @@ from moviepy.editor import (
     CompositeAudioClip, ColorClip
 )
 from moviepy.video.fx.all import colorx, lum_contrast
+from moviepy.audio.fx.all import audio_fadein, audio_fadeout
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
@@ -118,9 +119,9 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
     for index, (audio_clip, start) in enumerate(zip(audio_clips, starts)):
         layer = audio_clip
         if index > 0:
-            layer = layer.audio_fadein(AUDIO_FADE_DURATION)
+            layer = audio_fadein(layer, AUDIO_FADE_DURATION)
         if index == len(audio_clips) - 1:
-            layer = layer.audio_fadeout(AUDIO_FADE_DURATION)
+            layer = audio_fadeout(layer, AUDIO_FADE_DURATION)
         audio_layers.append(layer.set_start(start))
     final_audio = CompositeAudioClip(audio_layers).set_duration(total_duration)
 

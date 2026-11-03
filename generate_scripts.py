@@ -63,7 +63,7 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
     if groq_api_key:
         models.append(("groq", "openai/gpt-oss-120b"))
     # LLM7 supports anonymous turbo access; an optional token raises limits.
-    models.append(("llm7", "gpt-oss:20b"))
+    models.extend([("llm7", "gpt-oss:20b"), ("llm7", "nemotron-3-nano:30b"), ("llm7", "mistral-Nemo-Instruct-2407")])
     errors = []
     for provider, model in models:
         if provider == "gemini" and not api_key:
@@ -89,13 +89,10 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
             if llm7_api_key:
                 headers["Authorization"] = f"Bearer {llm7_api_key}"
             llm7_prompt = prompt.replace("Research claims using Google Search.", "Do not claim to have browsed or verified sources live. Provide source URLs only when confident they are real; list uncertain claims.")
-            llm7_prompt = llm7_prompt.replace("Return ONLY JSON array.", "Return ONLY a valid JSON object with a single key scripts whose value is an array of script objects.")
+            # Free-tier JSON mode is not documented; request plain JSON text and parse its array.
             payload = {"model": model, "messages": [{"role": "user", "content": llm7_prompt}],
-                       "temperature": 0.7, "response_format": {"type": "json_object"}}
-            if llm7_api_key:
-                provider_label = "LLM7 (token)"
-            else:
-                provider_label = "LLM7 (anonymous)"
+                       "temperature": 0.7}
+            provider_label = "LLM7 (token)" if llm7_api_key else "LLM7 (anonymous)"
         print(f"  [{provider_label}] Trying model: {model}")
         for attempt in range(2):
             try:
@@ -161,7 +158,7 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
                 print(f"  [{provider_label}] Successfully generated scripts with {model}.")
                 return accepted
             except requests.RequestException as exc:
-                errors.append(f"{model}: {exc}")
+                errors.append(f"{model}: HTTP {response.status_code}: {response.text[:1200]}" if "response" in locals() and response is not None else f"{model}: {exc}")
                 if attempt == 0:
                     time.sleep(3)
             except Exception as exc:

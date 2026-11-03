@@ -5,7 +5,7 @@ import asyncio
 
 async def _edge_save(text, path):
     import edge_tts
-    communicate = edge_tts.Communicate(text, "en-US-ChristopherNeural", rate="+10%")
+    communicate = edge_tts.Communicate(text, "en-US-ChristopherNeural", rate="+0%")
     await communicate.save(path)
 
 

@@ -40,12 +40,17 @@ def ensure_images(script_id, queries, use_ai=True):
 
     for i in range(4):
         filename = d / f"bg_{i}.jpg"
+        source_marker = d / f"bg_{i}.source"
+        cached_source = source_marker.read_text(encoding="utf-8").strip() if source_marker.exists() else "stock"
         if filename.exists():
             try:
                 with Image.open(filename) as cached:
                     cached.verify()
-                image_paths.append(str(filename))
-                continue
+                # If OVHcloud is enabled, replace a stock-prefetched image once.
+                # Keep already-generated OVHcloud images on subsequent runs.
+                if not (use_ovh and cached_source != "ovhcloud"):
+                    image_paths.append(str(filename))
+                    continue
             except Exception:
                 filename.unlink(missing_ok=True)
 
@@ -57,6 +62,7 @@ def ensure_images(script_id, queries, use_ai=True):
             try:
                 prompt = _make_ai_prompt(script_id.replace("_", " "), query, i)
                 generate_image(prompt, str(filename))
+                source_marker.write_text("ovhcloud", encoding="utf-8")
                 image_paths.append(str(filename))
                 print(f"  [Background] Image {i + 1} generated (OVHcloud SDXL).")
                 success = True
@@ -83,6 +89,7 @@ def ensure_images(script_id, queries, use_ai=True):
                         image = Image.open(BytesIO(image_response.content)).convert("RGB")
                         image.save(filename, "JPEG", quality=94, optimize=True)
                         downloaded_urls.add(img_url)
+                        source_marker.write_text("stock", encoding="utf-8")
                         image_paths.append(str(filename))
                         print(f"  [Background] Image {i + 1} downloaded (Wikipedia).")
                         success = True
@@ -117,6 +124,7 @@ def ensure_images(script_id, queries, use_ai=True):
                         image = Image.open(BytesIO(image_response.content)).convert("RGB")
                         image.save(filename, "JPEG", quality=94, optimize=True)
                         downloaded_urls.add(img_url)
+                        source_marker.write_text("stock", encoding="utf-8")
                         image_paths.append(str(filename))
                         print(f"  [Background] Image {i + 1} downloaded (Pixabay).")
                         success = True
@@ -128,6 +136,7 @@ def ensure_images(script_id, queries, use_ai=True):
         if not success:
             print(f"  [Background] Image {i + 1} unavailable. Using gradient fallback.")
             Image.new("RGB", (1080, 1920), color=(10, 12, 30)).save(filename, "JPEG")
+            source_marker.write_text("fallback", encoding="utf-8")
             image_paths.append(str(filename))
 
     return image_paths

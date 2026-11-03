@@ -192,6 +192,7 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
 
     bg_clips = []
     for scene_index, audio_clip in enumerate(audio_clips):
+        print(f"  [Render] Preparing scene {scene_index + 1}/{len(audio_clips)} (2 images)...", flush=True)
         scene_duration = audio_clip.duration + GAP + (0.5 if scene_index == len(audio_clips) - 1 else 0)
         view_duration = scene_duration / 2
         for view_index in range(2):
@@ -211,11 +212,13 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
     vignette = (np.clip(distance / (TARGET_W * 0.72), 0, 1) * 105).astype(np.uint8)
     vignette_clip = ImageClip(np.stack([vignette] * 3, axis=-1)).set_duration(total_duration).set_opacity(0.35)
 
-    print("  Building word-synced animated captions...")
+    print("  [Captions] Loading tiny speech model (first run may download it)...", flush=True)
     overlays = []
     if HAS_WHISPER:
         model = WhisperModel("tiny", device="cpu", compute_type="int8")
-        for audio_file, start_time in zip(audio_files, starts):
+        print("  [Captions] Model ready; transcribing narration with word timestamps...", flush=True)
+        for audio_index, (audio_file, start_time) in enumerate(zip(audio_files, starts), start=1):
+            print(f"  [Captions] Transcribing voice {audio_index}/{len(audio_files)}...", flush=True)
             segments, _ = model.transcribe(audio_file, word_timestamps=True)
             for segment in segments:
                 for word in segment.words:
@@ -234,7 +237,7 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
     else:
         print("  [Captions] faster-whisper unavailable; captions skipped.")
 
-    print("  Compositing balanced cinematic video...")
+    print("  [Render] Compositing 1080x1920 frames at 30 fps...", flush=True)
     final = CompositeVideoClip(
         bg_clips + [grain_clip, vignette_clip] + overlays,
         size=(TARGET_W, TARGET_H)
@@ -244,10 +247,11 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
     try:
         final.write_videofile(
             output_path, fps=30, codec="libx264", audio_codec="aac",
-            preset="medium", bitrate="8000k", threads=4,
+            preset="veryfast", bitrate="6000k", threads=4,
             ffmpeg_params=["-pix_fmt", "yuv420p", "-movflags", "+faststart"],
-            logger=None,
+            logger="bar",
         )
+        print("  [Quality] Checking MP4 streams and duration...", flush=True)
         _probe_video(output_path, total_duration)
     finally:
         final.close()

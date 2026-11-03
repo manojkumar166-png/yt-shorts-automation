@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 import requests
 
 BANK_FILE = Path("script_bank.json")
+BANK_FILES = (Path("script_bank.json"), Path("scripts_bank.json"))
 API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 DEFAULT_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 BATCH_SIZE = int(os.getenv("GEMINI_SCRIPT_BATCH_SIZE", "10"))
@@ -32,7 +33,7 @@ def generate_scripts(existing_topics, count=BATCH_SIZE):
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
     if not api_key:
         raise RuntimeError("GEMINI_API_KEY is missing. Add it in repository Actions secrets.")
-    blocked = sorted({str(x).strip().lower() for x in existing_topics if str(x).strip()})
+    blocked = sorted({re.sub(r"\\s+", " ", str(x)).strip().casefold() for x in existing_topics if str(x).strip()})
     prompt = f"""
 Create exactly {count} original high-retention Shorts scripts.
 For each: draft 3 distinct 8-16 word hook alternatives, select the strongest
@@ -45,7 +46,7 @@ established science publications, preferring primary sources. List uncertain
 claims in uncertain_claims; use [] only when sources firmly support every claim.
 Include exactly 4 specific, visually distinct image prompts. Aim for 35-55 sec.
 Avoid invented statistics, fake quotes and unsupported superlatives.
-Do not repeat these topics: {json.dumps(blocked)}
+ABSOLUTE EXCLUSION LIST: Never generate, paraphrase, reword, or make a close variation of any topic in this list. These topics already exist in the repository script bank and are forbidden: {json.dumps(blocked)}
 Return ONLY JSON array. Each object keys: topic, category,
 hook_alternatives (3 strings), selected_hook, facts (3 strings),
 image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
@@ -74,7 +75,7 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
                 hooks, hook = item.get("hook_alternatives"), str(item.get("selected_hook", "")).strip()
                 facts, images = item.get("facts"), item.get("image_queries")
                 sources, uncertain = item.get("sources"), item.get("uncertain_claims")
-                if (not topic or topic.lower() in seen or category not in CATEGORIES
+                if (not topic or normalized_topic in seen or category not in CATEGORIES
                     or not isinstance(hooks, list) or len(hooks) != 3
                     or not all(isinstance(x, str) and x.strip() for x in hooks)
                     or hook not in hooks or not isinstance(facts, list) or len(facts) != 3
@@ -95,11 +96,11 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
                     print(f"  [Quality] Rejected {topic}: {clean['quality_score']} < {MIN_SCORE}")
                     continue
                 accepted.append(clean)
-                seen.add(topic.lower())
+                seen.add(normalized_topic)
                 if len(accepted) >= count:
                     break
-            if not accepted:
-                raise ValueError("No new scripts passed schema and quality checks")
+            if len(accepted) != count:
+                raise ValueError(f"Only {len(accepted)} of {count} requested fresh scripts passed checks; refusing a partial batch")
             return accepted
         except Exception as exc:
             last_error = exc
@@ -108,12 +109,31 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
     raise RuntimeError(f"Gemini generation failed after 3 attempts: {last_error}")
 
 def append_fresh_scripts(existing_topics, count=BATCH_SIZE):
-    bank = json.loads(BANK_FILE.read_text(encoding="utf-8")) if BANK_FILE.exists() else []
-    fresh = generate_scripts(existing_topics, count=count)
-    known = {str(s.get("topic", "")).strip().lower() for s in bank}
-    added = [s for s in fresh if s["topic"].lower() not in known]
-    if not added:
-        raise RuntimeError("No new topics generated; refusing to recycle scripts")
+    # Read both filename spellings if present; topics in either bank are forbidden.
+    bank = []
+    for bank_path in BANK_FILES:
+        if bank_path.exists():
+            contents = json.loads(bank_path.read_text(encoding="utf-8"))
+            if not isinstance(contents, list):
+                raise ValueError(f"{bank_path} must contain a JSON array")
+            bank.extend(contents)
+
+    known = {
+        re.sub(r"\\s+", " ", str(item.get("topic", "")).strip()).casefold()
+        for item in bank if isinstance(item, dict) and item.get("topic")
+    }
+    blocked = {
+        re.sub(r"\\s+", " ", str(topic)).strip().casefold()
+        for topic in existing_topics if str(topic).strip()
+    }
+    blocked.update(known)
+    fresh = generate_scripts(blocked, count=count)
+    added = [
+        item for item in fresh
+        if re.sub(r"\\s+", " ", item["topic"]).strip().casefold() not in known
+    ]
+    if len(added) != count:
+        raise RuntimeError(f"Expected {count} entirely new topics; got {len(added)}. Refusing to use bank topics.")
     bank.extend(added)
     temp = BANK_FILE.with_suffix(".json.tmp")
     temp.write_text(json.dumps(bank, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

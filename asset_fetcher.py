@@ -18,7 +18,7 @@ def _make_ai_prompt(topic, query, index):
     )
 
 
-def ensure_images(script_id, queries, use_ai=True, num_images=6):
+def ensure_images(script_id, queries, use_ai=True, num_images=12):
     """Create/cache one 9:16 AI visual per narration section."""
     d = ASSETS / script_id
     d.mkdir(parents=True, exist_ok=True)

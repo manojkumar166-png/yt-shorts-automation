@@ -2,37 +2,41 @@ import os
 import shutil
 from asset_fetcher import ensure_images
 
-def get_background_images(queries, num_images=4, topic=""):
-    print(f"  [Background] Checking cache for {num_images} HD images...")
-    
+
+def get_background_images(queries, num_images=6, topic=""):
+    print(f"  [Background] Checking cache for {num_images} portrait images...")
+
     if os.path.exists("background"):
-        for f in os.listdir("background"):
-            if f.startswith("bg_"):
-                try: os.remove(os.path.join("background", f))
-                except: pass
+        for name in os.listdir("background"):
+            if name.startswith("bg_"):
+                try:
+                    os.remove(os.path.join("background", name))
+                except OSError:
+                    pass
     else:
         os.makedirs("background")
 
+    safe_id = "".join(c for c in topic if c.isalnum() or c in (" ", "_")).rstrip().replace(" ", "_")
+    asset_dir = os.path.join("assets", safe_id)
+    cached_paths = [
+        os.path.join(asset_dir, f"bg_{i}.jpg")
+        for i in range(num_images)
+    ]
+
+    # Reuse only a complete cache. A partial four-image cache must not be
+    # duplicated to fill a six-scene video.
+    if all(os.path.isfile(path) for path in cached_paths):
+        print("  [Background] Complete image cache found.")
+    else:
+        print("  [Background] Cache miss or incomplete cache. Generating missing images...")
+        cached_paths = ensure_images(safe_id, queries, num_images=num_images)[:num_images]
+
     image_paths = []
-    
-    safe_id = "".join(c for c in topic if c.isalnum() or c in (' ', '_')).rstrip().replace(" ", "_")
-    
-    # 1. Try to load from cache
-    if os.path.exists(f"assets/{safe_id}"):
-        for i in range(4):
-            src = f"assets/{safe_id}/bg_{i}.jpg"
-            if os.path.exists(src):
-                dest = f"background/bg_{i}.jpg"
-                shutil.copy(src, dest)
-                image_paths.append(dest)
-                
-    # 2. If cache is missing, download them
-    if len(image_paths) < num_images:
-        print(f"  [Background] Cache miss. Downloading...")
-        cached_paths = ensure_images(safe_id, queries)
-        for i, path in enumerate(cached_paths[:num_images]):
-            dest = f"background/bg_{i}.jpg"
-            shutil.copy(path, dest)
-            image_paths.append(dest)
-            
+    for i, path in enumerate(cached_paths):
+        dest = os.path.join("background", f"bg_{i}.jpg")
+        shutil.copy(path, dest)
+        image_paths.append(dest)
+
+    if len(image_paths) != num_images:
+        raise RuntimeError(f"Expected {num_images} background images, got {len(image_paths)}")
     return image_paths

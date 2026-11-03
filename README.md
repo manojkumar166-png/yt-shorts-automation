@@ -5,7 +5,7 @@ A GitHub Actions pipeline that selects unused scripts, creates narration, genera
 ## Pipeline
 
 1. **Script queue** — `main.py` selects the next unused entry from `script_bank.json`.
-2. **Fresh scripts** — when the bank has no unused scripts, `generate_scripts.py` asks Gemini to create 10 new, hooked science/fact Shorts scripts and appends them to the bank.
+2. **Fresh scripts** — when the bank has no unused scripts, `generate_scripts.py` asks Gemini (with Google Search grounding enabled) to research and create a new batch.
 3. **One-time use** — successful topics are permanently recorded in `state.json`. A topic is never selected again. A script that fails three times is retired rather than recycled.
 4. **Narration** — `audio.py` uses Edge-TTS, with gTTS as a fallback.
 5. **AI visuals** — anonymous OVHcloud SDXL is tried first; anonymous AI Horde is the fallback; a gradient is used only if both fail.
@@ -42,11 +42,20 @@ Do not send private or sensitive prompts to public image-generation services.
 
 The workflow creates up to 5 videos per scheduled run (configurable with `VIDEOS_PER_DAY`). Manual runs also create up to 5. Change the workflow environment value if you want a different quota.
 
+## Script quality and retention safeguards
+
+- Gemini drafts three hook alternatives and selects its strongest; the selected hook is used for narration.
+- Scripts build a curiosity gap, escalate across three factual beats, and deliver a payoff in the final beat.
+- Gemini is instructed to research with Google Search grounding and attach 3–6 source URLs plus an explicit `uncertain_claims` list.
+- URLs are checked for HTTPS structure, not independently audited. Review the linked sources and any uncertain claims before publishing; source links alone do not guarantee factual accuracy.
+- Each script is categorized. The queue avoids categories used in the previous two videos when another category is available.
+- A deterministic quality gate scores hook length, fact concision, image-prompt distinctness, source count and uncertainty flags. Scripts below 70/100 are rejected; set `MIN_SCRIPT_QUALITY_SCORE` to change the threshold.
+
 ## Improvements included
 
-- Curiosity-gap hooks; avoids generic "Did you know" openings.
+- Three hook alternatives with Gemini selecting the strongest; curiosity-gap and payoff structure.
 - Exactly three concise narration facts and four visual prompts per script.
-- Gemini JSON output validation and duplicate-topic filtering.
+- Gemini JSON/schema validation, research source URLs, uncertainty flags, category diversity and quality scoring.
 - Batch generation (10 scripts) to reduce repeated API calls.
 - Permanent consumed-topic history; no automatic queue reset.
 - Failed topics are retired after three attempts to prevent endless repeats.

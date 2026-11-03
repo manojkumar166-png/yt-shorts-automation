@@ -3,7 +3,7 @@ import shutil
 from asset_fetcher import ensure_images
 
 
-def get_background_images(queries, num_images=6, topic=""):
+def get_background_images(queries, num_images=12, topic=""):
     print(f"  [Background] Checking cache for {num_images} portrait images...")
 
     if os.path.exists("background"):

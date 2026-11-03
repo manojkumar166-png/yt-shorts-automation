@@ -128,19 +128,12 @@ async def create_voiceover(scenes: list[dict], voice: str, output: Path) -> bool
             segments = []
             for index, scene in enumerate(scenes, start=1):
                 part = temp_dir / f"voice-{index:02d}.mp3"
-                communicate = edge_tts.Communicate(scene["narration"], voice)
+                communicate = edge_tts.Communicate(scene["narration"], voice, rate="-20%", volume="+0%")
                 await communicate.save(str(part))
-                # Fit every narration beat into its five-second visual scene.
-                probe = subprocess.run(
-                    ["ffprobe", "-v", "error", "-show_entries", "format=duration",
-                     "-of", "default=noprint_wrappers=1:nokey=1", str(part)],
-                    check=True, capture_output=True, text=True
-                )
-                source_duration = max(float(probe.stdout.strip()), 0.1)
-                speed = max(1.0, source_duration / 4.55)
+                # Preserve slower natural TTS pace; never speed narration up.
                 fitted = temp_dir / f"voice-fit-{index:02d}.mp3"
                 run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-                     "-i", str(part), "-af", f"atempo={min(speed, 2.0):.3f},atrim=0:4.65",
+                     "-i", str(part), "-af", "apad=pad_dur=4.95,atrim=0:5",
                      "-c:a", "libmp3lame", "-q:a", "4", str(fitted)])
                 segments.append(fitted)
             listing = temp_dir / "concat.txt"
@@ -176,12 +169,15 @@ def render(day: int) -> Path:
             still = temp_dir / f"scene-{index:02d}.jpg"
             clip = temp_dir / f"clip-{index:02d}.mp4"
             make_scene(screenshot, scene, index, len(scenes), width, height, logo if logo.exists() else None, still)
-            # Gentle zoom/pan across each still; six clips are exactly five seconds each.
-            zoom = "min(zoom+0.0007,1.045)"
+            # Smooth Ken Burns motion with alternating horizontal drift.
+            # Avoid fading each scene to black; keep the sequence continuous.
+            direction = 1 if index % 2 else -1
+            zoom = "min(zoom+0.0010,1.055)"
+            drift = f"{direction}*on*0.16"
             run([
                 "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
                 "-loop", "1", "-i", str(still), "-t", "5",
-                "-vf", f"scale=800:1422,zoompan=z='{zoom}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=150:s=720x1280:fps=30,fade=t=in:st=0:d=0.18,fade=t=out:st=4.82:d=0.18,format=yuv420p",
+                "-vf", f"scale=800:1422,zoompan=z='{zoom}':x='iw/2-(iw/zoom/2)+({drift})':y='ih/2-(ih/zoom/2)':d=150:s=720x1280:fps=30,format=yuv420p",
                 "-an", "-c:v", "libx264", "-preset", "veryfast", "-crf", "21", str(clip)
             ])
             clips.append(clip)

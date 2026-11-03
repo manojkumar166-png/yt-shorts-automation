@@ -6,7 +6,7 @@ A GitHub Actions pipeline that selects a script, creates narration, generates fo
 
 1. **Queue** — `main.py` selects the next unused entry from `script_bank.json` and records progress in `state.json`.
 2. **Narration** — `audio.py` uses Edge-TTS, with gTTS as a fallback.
-3. **AI visuals** — `fetch_background.py` calls `asset_fetcher.py`. OVHcloud SDXL is tried first when its access token is configured. If it is not configured or fails, anonymous AI Horde is used automatically without an account or API key.
+3. **AI visuals** — `fetch_background.py` calls `asset_fetcher.py`. Anonymous OVHcloud SDXL is tried first without credentials. If it is unavailable or fails, anonymous AI Horde is used automatically.
 4. **Render** — `CreateVideo.py` assembles the vertical video, motion, narration, and subtitles.
 5. **Artifact** — GitHub Actions uploads generated MP4 files as a workflow artifact.
 
@@ -14,32 +14,29 @@ Wikipedia and Pixabay image fetching have been removed. The only non-AI fallback
 
 ## Image generation providers
 
-### 1. OVHcloud SDXL (preferred, optional)
+### 1. OVHcloud SDXL (anonymous, no API key)
 
-The project retains the OVHcloud AI Endpoints integration with the Stable Diffusion XL model.
+The project uses OVHcloud's public Stable Diffusion XL endpoint:
 
-1. Create an OVHcloud Public Cloud project and configure a payment method.
-2. Open **AI & Machine Learning → AI Endpoints**, create an API access key, and review current model pricing and account conditions.
-3. In this GitHub repository, open **Settings → Secrets and variables → Actions**.
-4. Add a repository secret named `OVH_AI_ENDPOINTS_ACCESS_TOKEN` and paste the OVHcloud access token as its value.
+`https://stable-diffusion-xl.endpoints.kepler.ai.cloud.ovh.net/api/text2image`
 
-When this secret is present, OVHcloud is attempted first for each image.
+The request does not include an API key, access token, account secret, or authorization header. The client spaces requests 31 seconds apart to respect the public endpoint's two-requests-per-minute limit. Public service availability and rate limits may change.
 
-### 2. AI Horde (automatic anonymous fallback)
+### 2. AI Horde (anonymous fallback)
 
-No registration, account, or API key is required. The integration uses AI Horde's public anonymous identity (`0000000000`). Anonymous requests have the lowest queue priority, so generation can be slow or unavailable when volunteer workers are busy. The code waits up to 15 minutes per image before falling back.
+No registration, account, or user-supplied API key is required. The integration uses AI Horde's public anonymous identity (`0000000000`). Anonymous requests have the lowest queue priority, so generation can be slow or unavailable when volunteer workers are busy. The code waits up to 15 minutes per image before falling back.
 
-AI Horde is community-powered and free to use anonymously, subject to service availability and request limits. Prompts and generated images are processed by volunteer workers; do not send private or sensitive material.
+AI Horde is community-powered. Prompts and generated images are processed by volunteer workers; do not send private or sensitive material.
 
 ### Fallback order
 
-1. OVHcloud SDXL, if configured.
+1. Anonymous OVHcloud SDXL.
 2. Anonymous AI Horde, with no user-supplied key.
 3. Gradient background only if both image generators fail.
 
-The pipeline generates images only for the video currently being rendered; it does not pre-generate visuals for a batch of unused scripts. The providers currently generate 512×768 (AI Horde) or 1024×1024 (OVHcloud) images, which the renderer crops/resizes to the 9:16 canvas. Prompts keep the main subject near the center.
+The pipeline generates images only for the video currently being rendered; it does not pre-generate visuals for a batch of unused scripts. The providers generate images at their supported dimensions, which the renderer crops/resizes to the 9:16 canvas. Prompts keep the main subject near the center.
 
-**Cost note:** AI Horde anonymous use does not require a paid account, but it has the lowest queue priority. OVHcloud may incur charges; review its current pricing and quotas before adding the secret.
+**Cost note:** These anonymous endpoints do not require user API keys. Availability, queueing, usage limits, and provider policies are controlled by the respective services and may change.
 
 ## Run on GitHub Actions
 
@@ -84,18 +81,18 @@ Use four short visual subjects for `image_queries`. They are expanded into cinem
 | `audio.py` | Text-to-speech |
 | `fetch_background.py` | Visual stage entry point |
 | `asset_fetcher.py` | Image cache, provider order, and fallback |
-| `ovhcloud_image.py` | OVHcloud SDXL API client |
+| `ovhcloud_image.py` | Anonymous OVHcloud SDXL API client |
 | `ai_horde_image.py` | Anonymous AI Horde API client |
 | `CreateVideo.py` | Vertical video rendering |
 | `.github/workflows/generate.yml` | Scheduled and manual GitHub Actions workflow |
 
 ## Local run
 
-Install Python dependencies and system packages (FFmpeg and ImageMagick), set the optional OVHcloud token if desired, then run:
+Install Python dependencies and system packages (FFmpeg and ImageMagick), then run:
 
 ```bash
 pip install -r requirements.txt
 python main.py
 ```
 
-AI Horde works without environment variables or API keys. Generated MP4 files are written to `output/`.
+Both image providers work without user API keys or environment variables. Generated MP4 files are written to `output/`.

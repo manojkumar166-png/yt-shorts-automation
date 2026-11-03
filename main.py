@@ -46,11 +46,12 @@ def get_next_script(state):
     bank = load_bank()
     done = set(state["done"])
     failed = state["failed"]
-    for script in bank:
-        topic = script.get("topic", "").strip()
-        if topic and topic not in done and failed.get(topic, 0) < MAX_FAILS:
+    eligible = [s for s in bank if s.get("topic", "").strip() and s.get("topic", "").strip() not in done and failed.get(s.get("topic", "").strip(), 0) < MAX_FAILS]
+    recent = {entry.get("category", "other") for entry in state["log"][-2:]}
+    for script in eligible:
+        if script.get("category", "other") not in recent:
             return script
-    return None
+    return eligible[0] if eligible else None
 
 
 def generate_more_scripts(state):
@@ -132,7 +133,7 @@ def main():
             generate_video(script_data)
             if topic not in state["done"]:
                 state["done"].append(topic)
-            state["log"].append({"topic": topic, "date": today})
+            state["log"].append({"topic": topic, "date": today, "category": script_data.get("category", "other"), "quality_score": script_data.get("quality_score", 0)})
             print(f"  Success: {topic} (permanently consumed)")
         except Exception as exc:
             state["failed"][topic] = state["failed"].get(topic, 0) + 1

@@ -1,6 +1,10 @@
 name: Render All Leaf Color Tutorial Shorts
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/render-leaf-color-series.yml"
   workflow_dispatch:
     inputs:
       prep_run_id:

@@ -88,6 +88,29 @@ python main.py
 ```
 
 
+
+## Balanced editing and audio assets
+
+The renderer adds word-timed captions (using faster-whisper), gentle narration
+normalization, a low-level music bed, subtle transition sound effects, and an
+FFprobe output check. Music and effects are optional and are never downloaded
+automatically.
+
+To add your own properly licensed or original audio, create:
+
+- `assets/music/` — place one background track (`.mp3`, `.wav`, `.m4a`, or `.ogg`) here.
+- `assets/sfx/` — place one or more short transition effects in the same formats.
+
+The first sorted music file is used, looped or trimmed to the video duration,
+and mixed quietly beneath narration. Sound effects are placed at narration
+scene boundaries at a restrained level. If these folders are absent or empty,
+the video renders without music/effects.
+
+Narration is normalized where supported. The renderer verifies that the
+resulting MP4 is 1080×1920, contains audio, has a plausible duration near the
+70-second target, and is not unexpectedly small. A failed verification stops
+the video from being marked successful or delivered.
+
 ## Telegram delivery
 
 1. Create a Telegram bot with [@BotFather](https://t.me/BotFather) and copy its token.

@@ -7,7 +7,7 @@ from pathlib import Path
 
 STATE_FILE = Path("state.json")
 BANK_FILE = Path("script_bank.json")
-PER_DAY = int(os.getenv("VIDEOS_PER_DAY", "5"))
+PER_DAY = int(os.getenv("VIDEOS_PER_DAY", "1"))
 MAX_FAILS = 3
 
 

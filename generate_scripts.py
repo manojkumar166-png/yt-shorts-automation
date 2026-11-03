@@ -107,9 +107,9 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
                 time.sleep(2 ** attempt)
     raise RuntimeError(f"Gemini generation failed after 3 attempts: {last_error}")
 
-def append_fresh_scripts(existing_topics):
+def append_fresh_scripts(existing_topics, count=BATCH_SIZE):
     bank = json.loads(BANK_FILE.read_text(encoding="utf-8")) if BANK_FILE.exists() else []
-    fresh = generate_scripts(existing_topics)
+    fresh = generate_scripts(existing_topics, count=count)
     known = {str(s.get("topic", "")).strip().lower() for s in bank}
     added = [s for s in fresh if s["topic"].lower() not in known]
     if not added:

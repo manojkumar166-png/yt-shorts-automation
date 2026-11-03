@@ -31,8 +31,9 @@ def _quality_score(item):
 
 def generate_scripts(existing_topics, count=BATCH_SIZE):
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
-    if not api_key:
-        raise RuntimeError("GEMINI_API_KEY is missing. Add it in repository Actions secrets.")
+    groq_api_key = os.getenv("GROQ_API_KEY", "").strip()
+    if not api_key and not groq_api_key:
+        raise RuntimeError("Add GEMINI_API_KEY or GROQ_API_KEY in repository Actions secrets.")
     blocked = sorted({" ".join(str(x).split()).casefold() for x in existing_topics if str(x).strip()})
     prompt = f"""
 Create exactly {count} original high-retention Shorts scripts.
@@ -51,25 +52,34 @@ Return ONLY JSON array. Each object keys: topic, category,
 hook_alternatives (3 strings), selected_hook, facts (3 strings),
 image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
 """
-    # Prefer the lighter models first. A fallback model is tried if a model is
-    # unavailable or its rate/quota limit is reached.
-    # Requested priority: Flash-Lite first, then regular Flash fallbacks.
-    # Exclude retired 2.5 model IDs that return 404 for this API project.
-    fallback_models = [
-        "gemini-3.5-flash-lite",
-        "gemini-3.1-flash-lite",
-        "gemini-3.8-flash",
-        "gemini-3.6-flash",
+    # Gemini Flash-Lite first, then Flash, followed by Groq's free OpenAI-compatible API.
+    models = [
+        ("gemini", "gemini-3.5-flash-lite"),
+        ("gemini", "gemini-3.1-flash-lite"),
+        ("gemini", "gemini-3.8-flash"),
+        ("gemini", "gemini-3.6-flash"),
     ]
-    models = list(dict.fromkeys(fallback_models))
-    headers = {"x-goog-api-key": api_key, "Content-Type": "application/json"}
-    payload = {"contents": [{"role": "user", "parts": [{"text": prompt}]}],
-               "tools": [{"google_search": {}}],
-               "generationConfig": {"temperature": 0.7}}
+    if groq_api_key:
+        models.append(("groq", "openai/gpt-oss-120b"))
     errors = []
-    for model in models:
-        url = f"{API_BASE}/{model}:generateContent"
-        print(f"  [Gemini] Trying model: {model}")
+    for provider, model in models:
+        if provider == "gemini" and not api_key:
+            continue
+        if provider == "gemini":
+            url = f"{API_BASE}/{model}:generateContent"
+            headers = {"x-goog-api-key": api_key, "Content-Type": "application/json"}
+            payload = {"contents": [{"role": "user", "parts": [{"text": prompt}]}],
+                       "tools": [{"google_search": {}}],
+                       "generationConfig": {"temperature": 0.7}}
+            provider_label = "Gemini"
+        else:
+            url = "https://api.groq.com/openai/v1/chat/completions"
+            headers = {"Authorization": f"Bearer {groq_api_key}", "Content-Type": "application/json"}
+            groq_prompt = prompt.replace("Research claims using Google Search.", "Do not claim to have browsed or verified sources live. Provide source URLs only when you are confident they are real; uncertain claims must be listed.")
+            payload = {"model": model, "messages": [{"role": "user", "content": groq_prompt}],
+                       "temperature": 0.7, "response_format": {"type": "json_object"}}
+            provider_label = "Groq"
+        print(f"  [{provider_label}] Trying model: {model}")
         for attempt in range(2):
             try:
                 response = requests.post(url, headers=headers, json=payload, timeout=120)
@@ -83,14 +93,15 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
                             delay = min(max(int(retry_after), 2), 20) if retry_after else 5
                         except ValueError:
                             delay = 5
-                        print(f"  [Gemini] {model} returned {response.status_code}; retrying in {delay}s.")
+                        print(f"  [{provider_label}] {model} returned {response.status_code}; retrying in {delay}s.")
                         time.sleep(delay)
                         continue
-                    print(f"  [Gemini] Falling back after {model} returned HTTP {response.status_code}.")
+                    print(f"  [{provider_label}] Falling back after {model} returned HTTP {response.status_code}.")
                     break
                 response.raise_for_status()
                 body = response.json()
-                raw = body["candidates"][0]["content"]["parts"][0]["text"]
+                raw = (body["candidates"][0]["content"]["parts"][0]["text"]
+                       if provider == "gemini" else body["choices"][0]["message"]["content"])
                 items = _extract_json(raw)
                 if not isinstance(items, list):
                     raise ValueError("Gemini output is not a JSON array")
@@ -130,7 +141,7 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
                         break
                 if len(accepted) != count:
                     raise ValueError(f"Only {len(accepted)} of {count} requested fresh scripts passed checks; refusing a partial batch")
-                print(f"  [Gemini] Successfully generated scripts with {model}.")
+                print(f"  [{provider_label}] Successfully generated scripts with {model}.")
                 return accepted
             except requests.RequestException as exc:
                 errors.append(f"{model}: {exc}")
@@ -140,7 +151,7 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
                 # Invalid output/quality is not fixed by switching models repeatedly.
                 errors.append(f"{model}: {exc}")
                 break
-    raise RuntimeError("All Gemini models failed. " + " | ".join(errors[-7:]))
+    raise RuntimeError("All configured LLM providers failed. " + " | ".join(errors[-7:]))
 
 def append_fresh_scripts(existing_topics, count=BATCH_SIZE):
     # Read both filename spellings if present; topics in either bank are forbidden.

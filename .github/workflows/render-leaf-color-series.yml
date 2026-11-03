@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/render-leaf-color-series.yml"
+      - "canva-series/render_day.py"
+      - "canva-series/storyboards/leaf-color/*.json"
   workflow_dispatch:
     inputs:
       prep_run_id:

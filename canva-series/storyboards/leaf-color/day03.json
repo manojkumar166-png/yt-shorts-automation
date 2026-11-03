@@ -1,0 +1,48 @@
+{
+  "day": 3,
+  "title": "Why Leaves Change Color: Yellow and Orange",
+  "output": "day03.mp4",
+  "duration_seconds": 30,
+  "fps": 30,
+  "width": 720,
+  "height": 1280,
+  "voice": "en-US-AriaNeural",
+  "scenes": [
+    {
+      "image": "screen-01",
+      "title": "HIDDEN COLORS",
+      "caption": "Yellow pigments are present before autumn.",
+      "narration": "Even green leaves contain yellow and orange pigments. Chlorophyll usually hides them during the growing season."
+    },
+    {
+      "image": "screen-02",
+      "title": "MEET THE CAROTENOIDS",
+      "caption": "Carotenoids create yellow and orange shades.",
+      "narration": "Carotenoids are a family of pigments found in leaves and many other parts of plants. They help capture light and protect leaf tissues."
+    },
+    {
+      "image": "screen-03",
+      "title": "GOLDEN LEAVES",
+      "caption": "Less chlorophyll lets yellow shine through.",
+      "narration": "When green chlorophyll fades, carotenoids become easier to see. This is why birches, aspens, and many other trees turn yellow."
+    },
+    {
+      "image": "screen-04",
+      "title": "ORANGE IN THE CANOPY",
+      "caption": "Some leaves show a blend of pigments.",
+      "narration": "Yellow and orange tones can mix with remaining green or newly formed red pigments. The result depends on the tree and the season."
+    },
+    {
+      "image": "screen-05",
+      "title": "PIGMENTS AT WORK",
+      "caption": "Carotenoids also help protect plant cells.",
+      "narration": "These pigments do more than create beautiful colors. They help manage excess light and protect the photosynthetic machinery."
+    },
+    {
+      "image": "screen-06",
+      "title": "WHY COLORS VARY",
+      "caption": "Each species has its own pigment balance.",
+      "narration": "Different trees contain different amounts and types of pigments. That is why autumn color varies from bright yellow to deep orange."
+    }
+  ]
+}

@@ -42,7 +42,9 @@ jobs:
           GEMINI_SCRIPT_BATCH_SIZE: "10"
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python main.py
+          PYTHONUNBUFFERED: "1"
+          HF_HUB_DISABLE_TELEMETRY: "1"
+        run: python -u main.py
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

@@ -259,7 +259,7 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
             output_path, fps=30, codec="libx264", audio_codec="aac",
             preset="veryfast", bitrate="6000k", threads=4,
             ffmpeg_params=["-pix_fmt", "yuv420p", "-movflags", "+faststart"],
-            logger="bar",
+            logger=None,  # Suppress MoviePy chunk/tqdm progress bars in GitHub Actions logs.
         )
         print("  [Quality] Checking MP4 streams and duration...", flush=True)
         _probe_video(output_path, total_duration)

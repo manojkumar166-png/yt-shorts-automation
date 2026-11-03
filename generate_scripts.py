@@ -29,37 +29,6 @@ def _quality_score(item):
     score += 10 if not item["uncertain_claims"] else 0
     return score
 
-def _gemini_request(payload, headers):
-    # Prefer Flash-Lite models, then try larger Flash models as fallbacks.
-    models = list(dict.fromkeys([
-        "gemini-3.5-flash-lite", "gemini-3.1-flash-lite",
-        "gemini-2.5-flash-lite", DEFAULT_MODEL,
-        "gemini-3.6-flash", "gemini-3.8-flash", "gemini-2.5-flash",
-    ]))
-    errors = []
-    for model in models:
-        url = f"{API_BASE}/{model}:generateContent"
-        print(f"  [Gemini] Trying {model}")
-        for attempt in range(2):
-            try:
-                response = requests.post(url, headers=headers, json=payload, timeout=120)
-                if response.status_code in (404, 429, 500, 502, 503, 504):
-                    errors.append(f"{model} HTTP {response.status_code}: {response.text[:500]}")
-                    if attempt == 0 and response.status_code in (429, 500, 502, 503, 504):
-                        time.sleep(5)
-                        continue
-                    break
-                response.raise_for_status()
-                print(f"  [Gemini] Using {model}")
-                return response
-            except requests.RequestException as exc:
-                errors.append(f"{model}: {exc}")
-                if attempt == 0:
-                    time.sleep(3)
-                else:
-                    break
-    raise RuntimeError("All Gemini model fallbacks failed: " + " | ".join(errors[-7:]))
-
 def generate_scripts(existing_topics, count=BATCH_SIZE):
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
     if not api_key:
@@ -84,14 +53,13 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
 """
     # Prefer the lighter models first. A fallback model is tried if a model is
     # unavailable or its rate/quota limit is reached.
+    # Requested priority: Flash-Lite first, then regular Flash fallbacks.
+    # Exclude retired 2.5 model IDs that return 404 for this API project.
     fallback_models = [
         "gemini-3.5-flash-lite",
         "gemini-3.1-flash-lite",
-        "gemini-2.5-flash-lite",
-        DEFAULT_MODEL,
-        "gemini-3.6-flash",
         "gemini-3.8-flash",
-        "gemini-2.5-flash",
+        "gemini-3.6-flash",
     ]
     models = list(dict.fromkeys(fallback_models))
     headers = {"x-goog-api-key": api_key, "Content-Type": "application/json"}

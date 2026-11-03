@@ -91,6 +91,8 @@ def generate_video(script_data):
 
     from CreateVideo import create_video
     create_video(full_script, audio_files, bg_images, out_path, topic)
+    if not os.path.isfile(out_path) or os.path.getsize(out_path) == 0:
+        raise RuntimeError(f"Renderer did not create a valid video file: {out_path}")
     print(f"  Video saved: {out_path}")
     return out_path
 
@@ -119,9 +121,10 @@ def main():
     try:
         todays_scripts = generate_more_scripts(state, needed)
     except Exception as exc:
-        print(f"  [Gemini] Daily script generation failed; stopping rather than reusing old scripts: {exc}")
-        return
+        print(f"  [Scripts] Daily script generation failed; stopping rather than reusing old scripts: {exc}")
+        raise
 
+    successful_videos = 0
     for index, script_data in enumerate(todays_scripts):
         topic = script_data["topic"]
         print(f"\n--- Making Video {index + 1}/{needed}: {topic} ---")
@@ -138,6 +141,7 @@ def main():
             if topic not in state["done"]:
                 state["done"].append(topic)
             state["log"].append({"topic": topic, "date": today, "category": script_data.get("category", "other"), "quality_score": script_data.get("quality_score", 0)})
+            successful_videos += 1
             print(f"  Success: {topic} (permanently consumed)")
         except Exception as exc:
             state["failed"][topic] = state["failed"].get(topic, 0) + 1
@@ -147,6 +151,10 @@ def main():
                 print(f"  [Queue] Retired {topic} after {MAX_FAILS} failures; it will not be reused.")
 
         save_state(state)
+
+    if successful_videos != needed:
+        raise RuntimeError(f"Video generation incomplete: created {successful_videos} of {needed} requested videos.")
+    print(f"\\n[Complete] Successfully generated all {successful_videos} videos.")
 
 
 if __name__ == "__main__":

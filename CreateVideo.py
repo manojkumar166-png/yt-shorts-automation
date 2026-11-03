@@ -73,10 +73,15 @@ def _cinematic_image_clip(image_path, duration, start, motion_seed=0, transition
     direction_x, direction_y = rng.choice((-1, 1)), rng.choice((-1, 1))
     zoom_start, zoom_end = rng.uniform(1.02, 1.07), rng.uniform(1.13, 1.19)
 
+    # Capture the source frame getter BEFORE replacing the clip's frame
+    # function. Calling clip.get_frame() from camera_frame after set_make_frame()
+    # recursively calls camera_frame until Python raises RecursionError.
+    source_get_frame = clip.get_frame
+
     def camera_frame(t):
         progress = min(max(t / max(duration, 0.001), 0.0), 1.0)
         zoom = zoom_start + (zoom_end - zoom_start) * progress
-        frame = clip.get_frame(t)
+        frame = source_get_frame(t)
         pil = Image.fromarray(frame)
         pil = pil.resize((int(TARGET_W * zoom), int(TARGET_H * zoom)), Image.Resampling.LANCZOS)
         max_x, max_y = pil.width - TARGET_W, pil.height - TARGET_H

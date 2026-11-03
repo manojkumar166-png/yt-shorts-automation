@@ -26,8 +26,8 @@ def generate_image(prompt: str, output_path: str) -> str:
         "prompt": prompt,
         "params": {
             "n": 1,
-            "width": 512,
-            "height": 768,
+            "width": 576,
+            "height": 1024,
             "steps": 25,
             "cfg_scale": 7.5,
             "sampler_name": "k_euler_a",

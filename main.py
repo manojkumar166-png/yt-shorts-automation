@@ -92,6 +92,7 @@ def generate_video(script_data):
     from CreateVideo import create_video
     create_video(full_script, audio_files, bg_images, out_path, topic)
     print(f"  Video saved: {out_path}")
+    return out_path
 
 
 def main():
@@ -125,7 +126,15 @@ def main():
         topic = script_data["topic"]
         print(f"\n--- Making Video {index + 1}/{needed}: {topic} ---")
         try:
-            generate_video(script_data)
+            video_path = generate_video(script_data)
+            telegram_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+            telegram_chat_id = os.getenv("TELEGRAM_CHAT_ID", "").strip()
+            if telegram_token and telegram_chat_id:
+                from telegram_delivery import send_video
+                send_video(video_path, telegram_token, telegram_chat_id, topic)
+                print(f"  [Telegram] Delivered: {topic}")
+            else:
+                print("  [Telegram] Not configured; video remains available as a GitHub Actions artifact.")
             if topic not in state["done"]:
                 state["done"].append(topic)
             state["log"].append({"topic": topic, "date": today, "category": script_data.get("category", "other"), "quality_score": script_data.get("quality_score", 0)})

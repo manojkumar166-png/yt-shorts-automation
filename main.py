@@ -86,9 +86,10 @@ def generate_video(script_data):
 
     print("  [Video] Rendering...")
     os.makedirs("output", exist_ok=True)
-    slug_source = re.sub(r"[^\w\s-]", "", topic).strip().lower()
-    slug = re.sub(r"\s+", "_", slug_source)[:60] or "video"
-    out_path = os.path.join("output", f"{slug}.mp4")
+    # Keep the topic readable in the output filename, removing path-unsafe characters.
+    safe_topic_name = re.sub(r'[<>:"/\\|?*\x00-\x1f]', "", topic).strip()
+    safe_topic_name = re.sub(r"\s+", " ", safe_topic_name)[:100].rstrip(" .") or "video"
+    out_path = os.path.join("output", f"{safe_topic_name}.mp4")
 
     from CreateVideo import create_video
     create_video(full_script, audio_files, bg_images, out_path, topic)

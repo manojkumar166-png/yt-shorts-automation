@@ -75,13 +75,14 @@ def _make_pil_text(text, fontsize=100):
 
 
 def _cinematic_image_clip(image_path, duration, start, motion_seed=0, transition="crossfade"):
-    """Portrait crop, cinematic grade and restrained Ken Burns camera movement."""
+    """Portrait crop, cinematic grade, Ken Burns movement and subtle handheld shake."""
     clip = ImageClip(image_path)
     scale = max(TARGET_W / clip.w, TARGET_H / clip.h) * 1.12
     clip = clip.resize(scale)
     rng = random.Random(motion_seed)
     direction_x, direction_y = rng.choice((-1, 1)), rng.choice((-1, 1))
     zoom_start, zoom_end = rng.uniform(1.02, 1.07), rng.uniform(1.13, 1.19)
+    shake_phase_x, shake_phase_y = rng.uniform(0, 2 * np.pi), rng.uniform(0, 2 * np.pi)
 
     # MoviePy's get_frame() resolves self.make_frame dynamically. Saving a
     # bound get_frame method is therefore NOT safe: set_make_frame() mutates
@@ -100,8 +101,12 @@ def _cinematic_image_clip(image_path, duration, start, motion_seed=0, transition
         max_x, max_y = pil.width - TARGET_W, pil.height - TARGET_H
         offset_x = int(max_x * (0.5 + 0.22 * direction_x * progress))
         offset_y = int(max_y * (0.5 + 0.22 * direction_y * progress))
-        offset_x = min(max(offset_x, 0), max_x)
-        offset_y = min(max(offset_y, 0), max_y)
+        # Subtle handheld-style shake, strongest mid-shot and eased at cuts.
+        shake_envelope = np.sin(np.pi * progress)
+        shake_x = int(round(4.0 * shake_envelope * np.sin(2 * np.pi * 2.7 * t + shake_phase_x)))
+        shake_y = int(round(3.0 * shake_envelope * np.sin(2 * np.pi * 3.1 * t + shake_phase_y)))
+        offset_x = min(max(offset_x + shake_x, 0), max_x)
+        offset_y = min(max(offset_y + shake_y, 0), max_y)
         return np.asarray(pil.crop((offset_x, offset_y, offset_x + TARGET_W, offset_y + TARGET_H)))
 
     clip = clip.set_make_frame(camera_frame).set_duration(duration)

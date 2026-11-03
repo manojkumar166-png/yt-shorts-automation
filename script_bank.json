@@ -288,5 +288,48 @@
     ],
     "uncertain_claims": [],
     "quality_score": 100
+  },
+  {
+    "topic": "Why Venus spins backward",
+    "category": "space",
+    "hook_alternatives": [
+      "Imagine a planet that spins opposite to every other world in our solar system.",
+      "What if the day on Venus moves backward, defying all other planets' rotations?",
+      "Ever wondered why Venus drifts eastward while Earth spins westward?"
+    ],
+    "hook": "Imagine a planet that spins opposite to every other world in our solar system.",
+    "facts": [
+      "Venus rotates once every 243 Earth days, and unlike Earth, its spin is retrograde—meaning it turns eastward, opposite to most planets' westward rotation in a slow, puzzling manner.",
+      "Scientists suspect a colossal collision with a planet-sized body early in Venus’s history slammed into its equator, flipping its spin and dramatically slowing its rotation to its present sluggishness.",
+      "The planet’s dense carbon-dioxide atmosphere creates massive solar tides that act like a brake, transferring angular momentum and extending Venus’s day to longer than its year for its current.",
+      "Because Venus spins so slowly, its atmosphere races around the planet at 100 m/s, generating super-rotation that distributes heat and creates permanent, crushing greenhouse conditions on its surface every day.",
+      "Unraveling Venus’s backward spin not only solves a solar-system oddity but also teaches us how planetary collisions and atmospheric tides can reshape worlds—insights crucial for exoplanet research today."
+    ],
+    "image_queries": [
+      "Vertical 9:16 illustration of Venus from space, highlighting its eastward (retrograde) rotation with a curved arrow, deep orange clouds, starry background.",
+      "Vertical 9:16 close-up of Venus’s thick cloud layer, showing a subtle arrow indicating opposite spin direction, dramatic lighting.",
+      "Vertical 9:16 diagram of Venus’s rotation axis, labeled 243‑day retrograde period, with Earth for scale, dark space backdrop.",
+      "Vertical 9:16 visual of Venus’s slow day-night cycle, half illuminated, overlay of 243‑day clock, emphasizing opposite spin.",
+      "Vertical 9:16 artistic rendering of a massive impact on early Venus, fiery debris striking equator, planetary silhouette.",
+      "Vertical 9:16 side view of Venus after collision, showing tilted spin axis and slowed rotation, with impact crater highlighted.",
+      "Vertical 9:16 illustration of solar tidal bulge on Venus’s dense CO₂ atmosphere, arrows showing torque slowing rotation.",
+      "Vertical 9:16 cross-section of Venus’s atmosphere, depicting solar heating creating massive tides, with momentum arrows.",
+      "Vertical 9:16 view of Venus’s upper atmosphere swirling at high speed, wind vectors circling planet, bright cloud patterns.",
+      "Vertical 9:16 cutaway of Venus showing rapid atmospheric flow around slow-spinning core, heat distribution heat map.",
+      "Vertical 9:16 graphic comparing Venus’s retrograde spin to exoplanet models, highlighting collision and tidal effects, futuristic lab setting.",
+      "Vertical 9:16 montage of scientists analyzing data, with Venus and distant exoplanet images, emphasizing lessons for planetary evolution."
+    ],
+    "sources": [
+      "https://nssdc.gsfc.nasa.gov/planetary/factsheet/venusfact.html",
+      "https://www.esa.int/Science_Exploration/Space_Science/Venus_Express",
+      "https://doi.org/10.1016/j.icarus.2015.06.012",
+      "https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2005JA011200",
+      "https://exoplanets.nasa.gov/resources/2242/venus-analog-exoplanets/"
+    ],
+    "uncertain_claims": [
+      "The hypothesis that a massive early impact flipped Venus’s spin remains unproven and is based on modeling.",
+      "The extent to which solar atmospheric tides alone slowed Venus’s rotation is still debated among researchers."
+    ],
+    "quality_score": 90
   }
 ]

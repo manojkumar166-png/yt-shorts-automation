@@ -11,7 +11,9 @@
     "Quantum Tunneling in Modern Transistors",
     "The Piri Reis Map Mystery"
   ],
-  "failed": {},
+  "failed": {
+    "Why Venus spins backward": 1
+  },
   "log": [
     {
       "topic": "the mysterious dancing forest",

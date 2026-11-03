@@ -81,8 +81,9 @@ def generate_video(script_data):
         "image_queries",
         [topic, f"{topic} close up", f"{topic} background", f"{topic} detail", f"{topic} wide scene", f"{topic} atmosphere"],
     )
-    # One vertical visual for each narrated section: hook plus five facts.
-    bg_images = get_background_images(queries, num_images=len(full_script), topic=topic)
+    # Two related vertical visuals for each narrated section: hook plus five facts.
+    images_per_scene = 2
+    bg_images = get_background_images(queries, num_images=len(full_script) * images_per_scene, topic=topic)
 
     print("  [Video] Rendering...")
     os.makedirs("output", exist_ok=True)

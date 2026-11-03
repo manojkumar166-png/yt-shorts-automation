@@ -76,6 +76,7 @@ image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
             url = "https://api.groq.com/openai/v1/chat/completions"
             headers = {"Authorization": f"Bearer {groq_api_key}", "Content-Type": "application/json"}
             groq_prompt = prompt.replace("Research claims using Google Search.", "Do not claim to have browsed or verified sources live. Provide source URLs only when you are confident they are real; uncertain claims must be listed.")
+            groq_prompt = groq_prompt.replace("Return ONLY JSON array.", "Return ONLY a valid JSON object with a single key scripts whose value is an array of script objects.")
             payload = {"model": model, "messages": [{"role": "user", "content": groq_prompt}],
                        "temperature": 0.7, "response_format": {"type": "json_object"}}
             provider_label = "Groq"

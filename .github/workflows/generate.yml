@@ -5,7 +5,7 @@ on:
     - cron: "30 3 * * *"
   workflow_dispatch:
 
-concurrency: 
+concurrency:
   group: shorts
   cancel-in-progress: false
 
@@ -33,7 +33,7 @@ jobs:
       - name: Install Python Dependencies
         run: pip install -r requirements.txt
 
-      - name: Prefetch Images (Look ahead 14 days)
+      - name: Prefetch Stock Images (Look ahead 14 scripts)
         env:
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
         run: python prefetch.py
@@ -49,6 +49,7 @@ jobs:
       - name: Generate Videos
         env:
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+          OVH_AI_ENDPOINTS_ACCESS_TOKEN: ${{ secrets.OVH_AI_ENDPOINTS_ACCESS_TOKEN }}
         run: python main.py
 
       - name: Upload Artifacts
@@ -69,7 +70,7 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "update state [skip ci]"
-            for i in 1 2 3; do 
+            for i in 1 2 3; do
               git pull --rebase && git push && break
               sleep 5
             done

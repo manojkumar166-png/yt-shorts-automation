@@ -9,7 +9,8 @@
     "Bioluminescent Waves",
     "Bi Sheng and the First Movable Type",
     "Quantum Tunneling in Modern Transistors",
-    "The Piri Reis Map Mystery"
+    "The Piri Reis Map Mystery",
+    "The Great Red Spot: Jupiter’s Ancient Storm"
   ],
   "failed": {
     "Why Venus spins backward": 1,
@@ -224,6 +225,12 @@
       "topic": "The Piri Reis Map Mystery",
       "date": "2026-11-03",
       "category": "mystery",
+      "quality_score": 100
+    },
+    {
+      "topic": "The Great Red Spot: Jupiter’s Ancient Storm",
+      "date": "2026-11-03",
+      "category": "space",
       "quality_score": 100
     }
   ]

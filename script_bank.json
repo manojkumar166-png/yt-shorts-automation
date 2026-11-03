@@ -373,5 +373,45 @@
       "The claim that giant squids can detect prey from over a hundred meters away is based on indirect observations and may vary among individuals."
     ],
     "quality_score": 90
+  },
+  {
+    "topic": "The Great Red Spot: Jupiter’s Ancient Storm",
+    "category": "space",
+    "hook_alternatives": [
+      "Jupiter’s colossal storm has outlived humanity—what’s keeping it alive and why it keeps raging.",
+      "The Great Red Spot: a storm larger than Earth that has survived for centuries—why?",
+      "A storm on Jupiter that’s older than the planet—can it ever die?"
+    ],
+    "hook": "Jupiter’s colossal storm has outlived humanity—what’s keeping it alive and why it keeps raging.",
+    "facts": [
+      "The Great Red Spot is a giant, persistent storm larger than Earth, has persisted for at least 400 years, first recorded by Dutch astronomer in 1655, visible from Earth’s telescopes.",
+      "Recent Juno spacecraft data shows the storm’s depth extends at least 200 km below the cloud tops, indicating complex atmospheric layers, observed by infrared imaging across multiple altitudes.",
+      "The storm’s winds reach 360 km/h (220 mph) at the edge, but can accelerate to over 600 km/h in core, making it the fastest on the planet.",
+      "The spot’s reddish hue is caused by complex molecules like hydrogen sulfide and organic compounds reacting to ultraviolet light, though exact composition remains under study, studied by spectroscopic analysis.",
+      "Predictions suggest the storm could shrink and dissipate within a few centuries as Jupiter’s atmospheric dynamics shift, but its long‑term future remains uncertain, scientists model future atmospheric shifts."
+    ],
+    "image_queries": [
+      "A dramatic, wide view of Jupiter’s Great Red Spot from space, swirling reddish cloud pattern against deep blue background, vibrant colors, cinematic lighting.",
+      "Close‑up detail of the storm’s edge, swirling clouds, intense red hues, high contrast, showing texture and motion, from a different angle.",
+      "Historical telescope drawing of Jupiter’s Great Red Spot from 17th century, detailed line art, astronomer’s notes, parchment background.",
+      "Modern high‑resolution image of the Great Red Spot taken by Hubble, showing its size relative to Earth, bright reds, deep blue.",
+      "Juno spacecraft infrared image of Jupiter’s atmosphere, highlighting the Great Red Spot’s depth and temperature gradients, color‑coded heat map.",
+      "3D rendering of Jupiter’s atmosphere showing vertical cross‑section of the Great Red Spot, indicating depth of 200 km, labeled layers.",
+      "Animated graphic of wind vectors over the Great Red Spot, arrows showing 360 km/h at edge, faster in core, color‑coded speed.",
+      "Close‑up of cloud motion in the storm, captured by Juno, illustrating rapid rotation, swirling patterns, high wind speeds.",
+      "Spectroscopy diagram of hydrogen sulfide and organic compounds reacting to UV light, resulting in red color, labeled chemical reactions.",
+      "Laboratory simulation image of UV radiation interacting with hydrogen sulfide gas, showing color change, under controlled conditions.",
+      "Computer model of Jupiter’s atmospheric dynamics over centuries, showing potential shrinkage of the Great Red Spot, animated timeline.",
+      "Visual projection of future atmospheric shifts on Jupiter, depicting a shrinking storm, with timeline overlay, artistic rendering."
+    ],
+    "sources": [
+      "https://www.nasa.gov/mission_pages/juno/main/index.html",
+      "https://www.nasa.gov/mission_pages/juno/multimedia/index.html",
+      "https://science.nasa.gov/juno",
+      "https://www.esa.int/Science_Exploration/Space_Science/Jupiter",
+      "https://hubblesite.org/contents/news-releases/2004/31"
+    ],
+    "uncertain_claims": [],
+    "quality_score": 100
   }
 ]

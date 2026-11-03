@@ -9,7 +9,7 @@ A GitHub Actions pipeline that selects unused scripts, creates narration, genera
 3. **One-time use** — successful topics are permanently recorded in `state.json`. A topic is never selected again. A script that fails three times is retired rather than recycled.
 4. **Narration** — `audio.py` uses Edge-TTS, with gTTS as a fallback.
 5. **AI visuals** — anonymous OVHcloud SDXL is tried first; anonymous AI Horde is the fallback; a gradient is used only if both fail.
-6. **Render and artifact** — the pipeline renders the video and uploads MP4 files as GitHub Actions artifacts.
+6. **Render and delivery** — the pipeline renders each video, sends it to the configured Telegram chat, and uploads MP4 files as GitHub Actions artifacts.
 
 ## Gemini setup (required for new scripts)
 
@@ -84,3 +84,14 @@ Set `GEMINI_API_KEY` in your environment, install requirements and system packag
 pip install -r requirements.txt
 python main.py
 ```
+
+
+## Telegram delivery
+
+1. Create a Telegram bot with [@BotFather](https://t.me/BotFather) and copy its token.
+2. Start a chat with the bot (send `/start`), or add it to the target group/channel. For a channel, make the bot an administrator with permission to post.
+3. Find the destination chat ID. Channel IDs commonly begin with `-100`.
+4. In GitHub, open **Settings → Secrets and variables → Actions** and add `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`.
+5. Run the workflow manually once to test delivery. Each successfully rendered video is sent to Telegram; if Telegram is not configured, videos remain available as Actions artifacts.
+
+Keep the bot token private. Do not paste it into source files or commit it.

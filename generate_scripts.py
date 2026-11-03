@@ -11,7 +11,8 @@ DEFAULT_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
 BATCH_SIZE = int(os.getenv("GEMINI_SCRIPT_BATCH_SIZE", "10"))
 MIN_SCORE = int(os.getenv("MIN_SCRIPT_QUALITY_SCORE", "70"))
 FACT_COUNT = 5
-IMAGE_COUNT = FACT_COUNT + 1
+IMAGES_PER_SCENE = 2
+IMAGE_COUNT = (FACT_COUNT + 1) * IMAGES_PER_SCENE
 CATEGORIES = {"science", "nature", "history", "technology", "mystery", "animals", "space", "other"}
 
 def _extract_json(text):
@@ -41,17 +42,17 @@ def generate_scripts(existing_topics, count=BATCH_SIZE):
         print("  [LLM7] Anonymous access enabled; no API key required.")
     blocked = sorted({" ".join(str(x).split()).casefold() for x in existing_topics if str(x).strip()})
     prompt = f"""
-Create exactly {count} original high-retention YouTube Shorts scripts designed for approximately 60 seconds of spoken narration.
+Create exactly {count} original high-retention YouTube Shorts scripts designed for approximately 70 seconds of spoken narration.
 For each: draft 3 distinct 10-16 word hook alternatives, select the strongest
 into selected_hook, never start with Did you know; create a curiosity gap,
 escalate across exactly 5 detailed but concise factual beats, and end with a satisfying payoff.
-The combined hook and five facts must contain approximately 140-160 spoken words (acceptable range 135-170), suitable for about one minute at a natural narration pace. Each fact should generally be 23-30 words. Do not pad with repetition.
+The combined hook and five facts must contain approximately 155-180 spoken words (acceptable range 145-190), suitable for about one minute at a natural narration pace. Each fact should generally be 23-30 words. Do not pad with repetition.
 Assign one category: science, nature, history, technology, mystery, animals,
 space, other. Research claims using Google Search. Provide 3-6 direct HTTPS
 source URLs from reputable institutions, journals, museums, universities or
 established science publications, preferring primary sources. List uncertain
 claims in uncertain_claims; use [] only when sources firmly support every claim.
-Include exactly 6 specific, visually distinct image prompts, one for each narration section (hook plus five facts). Each scene should be suitable for a vertical 9:16 image. Aim for approximately 60 seconds.
+Include exactly 12 specific image prompts: two for each narration section (hook plus five facts). Each adjacent pair must illustrate the same scene but show different angles, details, or moments. Use vertical 9:16 composition. Aim for approximately 70 seconds.
 Avoid invented statistics, fake quotes and unsupported superlatives.
 ABSOLUTE EXCLUSION LIST: Never generate, paraphrase, reword, or make a close variation of any topic in this list. These topics already exist in the repository script bank and are forbidden: {json.dumps(blocked)}
 Return ONLY JSON array. Each object keys: topic, category,
@@ -139,7 +140,7 @@ image_queries (6 strings), sources (3-6 URLs), uncertain_claims (array).
                         or not all(isinstance(x, str) and x.strip() for x in hooks)
                         or hook not in hooks or not isinstance(facts, list) or len(facts) != FACT_COUNT
                         or not all(isinstance(x, str) and x.strip() for x in facts)
-                        or not (135 <= len((hook + " " + " ".join(facts)).split()) <= 170)
+                        or not (145 <= len((hook + " " + " ".join(facts)).split()) <= 190)
                         or not isinstance(images, list) or len(images) != IMAGE_COUNT
                         or not all(isinstance(x, str) and x.strip() for x in images)
                         or len({x.strip().casefold() for x in images}) != IMAGE_COUNT

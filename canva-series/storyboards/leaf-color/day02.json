@@ -12,37 +12,37 @@
       "image": "screen-01",
       "title": "YELLOW AND ORANGE APPEAR",
       "caption": "As chlorophyll fades, other pigments become visible.",
-      "narration": "As autumn approaches, days grow shorter and temperatures often fall. Many trees begin preparing their leaves for the season ahead."
+      "narration": "Shorter days signal many trees to prepare for winter."
     },
     {
       "image": "screen-02",
       "title": "CHLOROPHYLL BREAKS DOWN",
       "caption": "The green pigment is no longer replaced as quickly.",
-      "narration": "Trees slow the production of chlorophyll. Existing chlorophyll breaks down, so the green color gradually disappears."
+      "narration": "Chlorophyll production slows, and the green pigment breaks down."
     },
     {
       "image": "screen-03",
       "title": "A SEASONAL TRANSITION",
       "caption": "The same leaf can change over several weeks.",
-      "narration": "Color change is gradual. A leaf may shift from green to pale yellow, then become bright gold as its pigments are revealed."
+      "narration": "Yellow and orange pigments become easier to see."
     },
     {
       "image": "screen-04",
       "title": "AUTUMN LIGHT",
       "caption": "Sunlight shines through changing leaves.",
-      "narration": "The warm glow of autumn comes from light interacting with pigments in the leaf. The colors do not simply appear overnight."
+      "narration": "The color shift happens gradually over several weeks."
     },
     {
       "image": "screen-05",
       "title": "A FOREST OF GOLD",
       "caption": "Different trees change at different times.",
-      "narration": "Species, weather, and local conditions all affect timing. That is why one hillside can show several stages of autumn at once."
+      "narration": "Different tree species change at different times."
     },
     {
       "image": "screen-06",
       "title": "SHORTER DAYS",
       "caption": "Day length is an important seasonal cue.",
-      "narration": "The shortening day length helps many trees sense that winter is coming. It is one of the signals that starts the change."
+      "narration": "Day length is one important signal that starts this process."
     }
   ]
 }

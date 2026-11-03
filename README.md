@@ -1,6 +1,6 @@
 # YouTube Shorts Automation
 
-A GitHub Actions pipeline that selects unused scripts, creates approximately one minute of narration, generates six AI background visuals, and renders vertical 1080×1920 MP4s.
+A GitHub Actions pipeline that selects unused scripts, creates approximately 70 seconds of narration, generates twelve AI background visuals, and renders vertical 1080×1920 MP4s.
 
 ## Pipeline
 
@@ -8,7 +8,7 @@ A GitHub Actions pipeline that selects unused scripts, creates approximately one
 2. **Daily fresh scripts** — on every scheduled or manual run, `main.py` asks Gemini (with Google Search grounding enabled) to generate a brand-new script for each video planned in that run. It never fills the day's quota from older queued scripts.
 3. **One-time use** — successful topics are permanently recorded in `state.json`. A topic is never selected again. A script that fails three times is retired rather than recycled.
 4. **Narration** — `audio.py` uses Edge-TTS, with gTTS as a fallback.
-5. **AI visuals** — six 9:16 portrait images are generated per video. Anonymous OVHcloud SDXL is tried first; anonymous AI Horde is the fallback; a gradient is used only if both fail.
+5. **AI visuals** — twelve 9:16 portrait images are generated per video (two related images for each of six scenes). Anonymous OVHcloud SDXL is tried first; anonymous AI Horde is the fallback; a gradient is used only if both fail.
 6. **Render and delivery** — the pipeline renders each video, sends it to the configured Telegram chat, and uploads MP4 files as GitHub Actions artifacts.
 
 ## Gemini setup (required for new scripts)
@@ -54,8 +54,8 @@ The workflow creates up to 5 videos per scheduled run (configurable with `VIDEOS
 ## Improvements included
 
 - Three hook alternatives with Gemini selecting the strongest; curiosity-gap and payoff structure.
-- Approximately one-minute narration at a natural TTS pace, with actual speech and rendered durations printed in the Actions log.
-- Six 9:16 portrait scenes per video, rendered at 1080×1920.
+- Approximately 70-second narration at a natural TTS pace, with actual speech and rendered durations printed in the Actions log.
+- Six narration scenes per video, each showing two related 9:16 images in sequence; rendered at 1080×1920.
 - Exactly five narration facts and six distinct visual prompts per script, aiming for approximately 60 seconds of narration.
 - Gemini JSON/schema validation, research source URLs, uncertainty flags, category diversity and quality scoring.
 - Daily generation: Gemini creates a new script for every planned video on each run.

@@ -142,6 +142,7 @@ image_queries (6 strings), sources (3-6 URLs), uncertain_claims (array).
                         or not (135 <= len((hook + " " + " ".join(facts)).split()) <= 170)
                         or not isinstance(images, list) or len(images) != IMAGE_COUNT
                         or not all(isinstance(x, str) and x.strip() for x in images)
+                        or len({x.strip().casefold() for x in images}) != IMAGE_COUNT
                         or not isinstance(sources, list) or not 2 <= len(sources) <= 6
                         or not all(isinstance(x, str) and urlparse(x).scheme == "https" and urlparse(x).netloc for x in sources)
                         or not isinstance(uncertain, list)):

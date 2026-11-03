@@ -19,6 +19,16 @@ from moviepy.video.fx.all import colorx, lum_contrast
 from moviepy.audio.fx.all import audio_fadein, audio_fadeout, audio_normalize
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
+from proglog import ProgressBarLogger
+
+
+class QuietMoviePyLogger(ProgressBarLogger):
+    """Hide noisy progress updates but print one completed video-frame line."""
+    def bars_callback(self, bar, attr, value, old_value=None):
+        if bar == "t" and attr == "index":
+            total = self.bars.get(bar, {}).get("total")
+            if total and value >= total:
+                print(f"t: 100%|██████████| {value}/{total} frames complete", flush=True)
 
 try:
     from faster_whisper import WhisperModel
@@ -259,8 +269,10 @@ def create_video(texts, audio_files, bg_images, output_path, topic=""):
             output_path, fps=30, codec="libx264", audio_codec="aac",
             preset="veryfast", bitrate="6000k", threads=4,
             ffmpeg_params=["-pix_fmt", "yuv420p", "-movflags", "+faststart"],
-            logger=None,  # Suppress MoviePy chunk/tqdm progress bars in GitHub Actions logs.
+            logger=QuietMoviePyLogger(),  # Show only the final frame-complete line; hide chunk/intermediate bars.
         )
+        print("Moviepy - Done !", flush=True)
+        print(f"Moviepy - video ready {output_path}", flush=True)
         print("  [Quality] Checking MP4 streams and duration...", flush=True)
         _probe_video(output_path, total_duration)
     finally:

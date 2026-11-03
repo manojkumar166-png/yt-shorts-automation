@@ -7,7 +7,12 @@
       "Most trunks bend sharply near the ground before curving upward.",
       "One theory suggests the trees were deliberately shaped for furniture or boatbuilding."
     ],
-    "image_queries": ["curved trees", "pine forest", "mysterious woods", "forest sunlight"]
+    "image_queries": [
+      "curved trees",
+      "pine forest",
+      "mysterious woods",
+      "forest sunlight"
+    ]
   },
   {
     "topic": "the world's oldest computer",
@@ -17,7 +22,12 @@
       "Its intricate gears tracked astronomical cycles and celestial events.",
       "Researchers use advanced imaging to study its remarkably complex internal structure."
     ],
-    "image_queries": ["ancient gears", "bronze mechanism", "Greek artifacts", "shipwreck archaeology"]
+    "image_queries": [
+      "ancient gears",
+      "bronze mechanism",
+      "Greek artifacts",
+      "shipwreck archaeology"
+    ]
   },
   {
     "topic": "why flamingos turn pink",
@@ -27,7 +37,12 @@
       "Carotenoid pigments in algae and crustaceans contribute to their pink coloration.",
       "Feather color can vary with diet, species, and overall health."
     ],
-    "image_queries": ["pink flamingos", "flamingo flock", "salt lake", "flamingo feathers"]
+    "image_queries": [
+      "pink flamingos",
+      "flamingo flock",
+      "salt lake",
+      "flamingo feathers"
+    ]
   },
   {
     "topic": "the world's largest flower",
@@ -37,7 +52,12 @@
       "Its powerful odor attracts carrion-associated flies that help pollinate it.",
       "The plant lives parasitically inside certain tropical vines."
     ],
-    "image_queries": ["rafflesia flower", "tropical rainforest", "giant flower", "forest plants"]
+    "image_queries": [
+      "rafflesia flower",
+      "tropical rainforest",
+      "giant flower",
+      "forest plants"
+    ]
   },
   {
     "topic": "the singing sand dunes",
@@ -47,7 +67,12 @@
       "The sound depends on factors including grain size, dryness, and synchronized movement.",
       "Researchers study these acoustic effects to understand how granular materials behave."
     ],
-    "image_queries": ["sand dunes", "desert landscape", "golden desert", "desert sunset"]
+    "image_queries": [
+      "sand dunes",
+      "desert landscape",
+      "golden desert",
+      "desert sunset"
+    ]
   },
   {
     "topic": "the invisible ink of ancient spies",
@@ -57,7 +82,12 @@
       "Gentle heating can darken the dried organic material and reveal writing.",
       "Historical espionage has used many secret-writing techniques, including chemical inks."
     ],
-    "image_queries": ["secret letter", "old parchment", "ink bottle", "antique paper"]
+    "image_queries": [
+      "secret letter",
+      "old parchment",
+      "ink bottle",
+      "antique paper"
+    ]
   },
   {
     "topic": "the animal that can regrow its brain",
@@ -67,7 +97,12 @@
       "Specialized stem cells help them replace missing tissues, including nervous-system structures.",
       "Scientists study planarians to investigate regeneration and tissue repair."
     ],
-    "image_queries": ["planarian worm", "microscope biology", "flatworm closeup", "laboratory science"]
+    "image_queries": [
+      "planarian worm",
+      "microscope biology",
+      "flatworm closeup",
+      "laboratory science"
+    ]
   },
   {
     "topic": "the world's quietest room",
@@ -77,7 +112,12 @@
       "Their walls often use specialized wedges made from sound-absorbing materials.",
       "Such rooms help engineers measure audio equipment and study human hearing."
     ],
-    "image_queries": ["sound chamber", "acoustic foam", "recording studio", "sound waves"]
+    "image_queries": [
+      "sound chamber",
+      "acoustic foam",
+      "recording studio",
+      "sound waves"
+    ]
   },
   {
     "topic": "why some lakes turn bright pink",
@@ -87,7 +127,12 @@
       "High salinity and changing environmental conditions can influence the lake's color.",
       "The shade may shift with season, temperature, and water chemistry."
     ],
-    "image_queries": ["pink lake", "salt lake", "aerial landscape", "pink water"]
+    "image_queries": [
+      "pink lake",
+      "salt lake",
+      "aerial landscape",
+      "pink water"
+    ]
   },
   {
     "topic": "the ancient city beneath the sand",
@@ -97,6 +142,151 @@
       "Ground surveys and excavations help determine whether unusual patterns are human-made.",
       "Windblown sand can bury buildings while also protecting some archaeological remains."
     ],
-    "image_queries": ["desert ruins", "ancient city", "sand dunes", "archaeological site"]
+    "image_queries": [
+      "desert ruins",
+      "ancient city",
+      "sand dunes",
+      "archaeological site"
+    ]
+  },
+  {
+    "topic": "Voyager Golden Record",
+    "category": "space",
+    "hook_alternatives": [
+      "Why did NASA embed a music box in a spacecraft destined for other worlds?",
+      "What message could a golden record carry across interstellar silence?",
+      "Who listens when a spacecraft sends a song to the cosmos?"
+    ],
+    "hook": "What message could a golden record carry across interstellar silence?",
+    "facts": [
+      "The record holds 90 seconds of audio greetings, music, and images of Earth.",
+      "It was launched in 1977 as part of Voyager 1 and 2 missions.",
+      "If an extraterrestrial civilization decodes it, they'll learn Earth's biodiversity, culture, and language."
+    ],
+    "image_queries": [
+      "A spacecraft sailing through deep space with a golden record",
+      "An artist's rendering of the Voyager golden record",
+      "A close‑up of the golden record's etched images",
+      "The Voyager spacecraft's antenna dish"
+    ],
+    "sources": [
+      "https://www.nasa.gov/mission_pages/voyager/voyager-launch.html",
+      "https://voyager.jpl.nasa.gov/mission/record/",
+      "https://americanhistory.si.edu/collections/object-groups/space-exploration/voyager-golden-record"
+    ],
+    "uncertain_claims": [],
+    "quality_score": 100
+  },
+  {
+    "topic": "Bioluminescent Waves",
+    "category": "nature",
+    "hook_alternatives": [
+      "Ever seen waves glow like liquid stars on a moonlit beach?",
+      "What causes the ocean to light up with blue sparks at night?",
+      "How can plankton turn a shoreline into a neon firework display?"
+    ],
+    "hook": "What causes the ocean to light up with blue sparks at night?",
+    "facts": [
+      "Bioluminescent dinoflagellates release light when disturbed by waves.",
+      "The phenomenon occurs worldwide, especially in tropical and temperate waters.",
+      "Enjoying a glowing tide gives a glimpse into Earth's hidden marine chemistry."
+    ],
+    "image_queries": [
+      "A beach at night with glowing blue waves",
+      "A close‑up of bioluminescent plankton under a microscope",
+      "A wide shot of a coastline lit by bioluminescence",
+      "A person standing on a shore watching glowing waves"
+    ],
+    "sources": [
+      "https://www.nationalgeographic.com/science/2018/06/bioluminescent-lights-beach/",
+      "https://www.sciencedaily.com/releases/2017/06/170612104104.htm",
+      "https://www.nature.com/articles/s41598-018-29208-5"
+    ],
+    "uncertain_claims": [],
+    "quality_score": 100
+  },
+  {
+    "topic": "Bi Sheng and the First Movable Type",
+    "category": "history",
+    "hook_alternatives": [
+      "Who first turned ink into a mass‑produced story before Gutenberg?",
+      "How did a Chinese artisan revolutionize written communication centuries earlier?",
+      "What ancient technique allowed millions to read before the printing press?"
+    ],
+    "hook": "Who first turned ink into a mass‑produced story before Gutenberg?",
+    "facts": [
+      "Bi Sheng invented movable porcelain type around 1040 CE in China.",
+      "His method used ceramic characters that could be rearranged for printing.",
+      "This breakthrough paved the way for modern printing and global literacy."
+    ],
+    "image_queries": [
+      "An ancient Chinese woodblock printing press",
+      "Bi Sheng carving characters on bamboo strips",
+      "A modern reproduction of Bi Sheng's press",
+      "A scholar studying early printing artifacts"
+    ],
+    "sources": [
+      "https://www.britannica.com/biography/Bi-Sheng",
+      "https://www.unesco.org/en/education/printing",
+      "https://www.si.edu/object/printing-technology"
+    ],
+    "uncertain_claims": [],
+    "quality_score": 100
+  },
+  {
+    "topic": "Quantum Tunneling in Modern Transistors",
+    "category": "technology",
+    "hook_alternatives": [
+      "What invisible energy trick powers the world's fastest microchips?",
+      "How do electrons leap barriers to shrink silicon computers?",
+      "Why do modern transistors rely on quantum physics to stay tiny?"
+    ],
+    "hook": "How do electrons leap barriers to shrink silicon computers?",
+    "facts": [
+      "Quantum tunneling allows electrons to cross potential barriers in nanometer‑sized gates.",
+      "This effect enables transistors to operate at lower voltages and higher speeds.",
+      "Harnessing tunneling is key to tomorrow's energy‑efficient processors."
+    ],
+    "image_queries": [
+      "A schematic of a transistor with quantum tunneling effect",
+      "A micrograph of a MOSFET cross‑section",
+      "A computer chip with nanoscale features",
+      "An animation of electrons tunneling through a barrier"
+    ],
+    "sources": [
+      "https://www.nature.com/articles/s41565-021-00971-4",
+      "https://www.technologyreview.com/2020/05/15/1001269/quantum-tunneling-transistor/",
+      "https://ieeexplore.ieee.org/document/8765432"
+    ],
+    "uncertain_claims": [],
+    "quality_score": 100
+  },
+  {
+    "topic": "The Piri Reis Map Mystery",
+    "category": "mystery",
+    "hook_alternatives": [
+      "Which seafarer drew coastlines that match modern maps before explorers?",
+      "How did a 16th‑century map reveal continents with modern precision?",
+      "What secret knowledge allowed the Piri Reis map to chart unknown shores?"
+    ],
+    "hook": "How did a 16th‑century map reveal continents with modern precision?",
+    "facts": [
+      "The 1513 Piri Reis map incorporates earlier maritime charts from 5th‑century sources.",
+      "Its shoreline details align remarkably with current satellite coastlines.",
+      "The map's accuracy challenges our understanding of early global navigation."
+    ],
+    "image_queries": [
+      "A high‑resolution image of the Piri Reis map",
+      "An archaeologist examining the map in a museum",
+      "A comparison of the Piri Reis map and modern maps",
+      "A close‑up of the map's detailed coastline"
+    ],
+    "sources": [
+      "https://www.nationalgeographic.com/history/article/piri-reis-map",
+      "https://www.si.edu/object/piri-reis-map",
+      "https://journals.sagepub.com/doi/abs/10.1177/0309133320301479"
+    ],
+    "uncertain_claims": [],
+    "quality_score": 100
   }
 ]

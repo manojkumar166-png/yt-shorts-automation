@@ -4,7 +4,12 @@
     "the world's oldest computer",
     "why flamingos turn pink",
     "the world's largest flower",
-    "the singing sand dunes"
+    "the singing sand dunes",
+    "Voyager Golden Record",
+    "Bioluminescent Waves",
+    "Bi Sheng and the First Movable Type",
+    "Quantum Tunneling in Modern Transistors",
+    "The Piri Reis Map Mystery"
   ],
   "failed": {},
   "log": [
@@ -187,6 +192,36 @@
     {
       "topic": "the singing sand dunes",
       "date": "2026-11-02"
+    },
+    {
+      "topic": "Voyager Golden Record",
+      "date": "2026-11-03",
+      "category": "space",
+      "quality_score": 100
+    },
+    {
+      "topic": "Bioluminescent Waves",
+      "date": "2026-11-03",
+      "category": "nature",
+      "quality_score": 100
+    },
+    {
+      "topic": "Bi Sheng and the First Movable Type",
+      "date": "2026-11-03",
+      "category": "history",
+      "quality_score": 100
+    },
+    {
+      "topic": "Quantum Tunneling in Modern Transistors",
+      "date": "2026-11-03",
+      "category": "technology",
+      "quality_score": 100
+    },
+    {
+      "topic": "The Piri Reis Map Mystery",
+      "date": "2026-11-03",
+      "category": "mystery",
+      "quality_score": 100
     }
   ]
 }

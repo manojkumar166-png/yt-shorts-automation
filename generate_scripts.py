@@ -7,7 +7,7 @@ import requests
 BANK_FILE = Path("script_bank.json")
 BANK_FILES = (Path("script_bank.json"), Path("scripts_bank.json"))
 API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
-DEFAULT_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+DEFAULT_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
 BATCH_SIZE = int(os.getenv("GEMINI_SCRIPT_BATCH_SIZE", "10"))
 MIN_SCORE = int(os.getenv("MIN_SCRIPT_QUALITY_SCORE", "70"))
 CATEGORIES = {"science", "nature", "history", "technology", "mystery", "animals", "space", "other"}
@@ -51,63 +51,97 @@ Return ONLY JSON array. Each object keys: topic, category,
 hook_alternatives (3 strings), selected_hook, facts (3 strings),
 image_queries (4 strings), sources (3-6 URLs), uncertain_claims (array).
 """
-    url = f"{API_BASE}/{DEFAULT_MODEL}:generateContent"
+    # Prefer the lighter models first. A fallback model is tried if a model is
+    # unavailable or its rate/quota limit is reached.
+    fallback_models = [
+        "gemini-3.5-flash-lite",
+        "gemini-3.1-flash-lite",
+        "gemini-2.5-flash-lite",
+        DEFAULT_MODEL,
+        "gemini-3.6-flash",
+        "gemini-3.8-flash",
+        "gemini-2.5-flash",
+    ]
+    models = list(dict.fromkeys(fallback_models))
     headers = {"x-goog-api-key": api_key, "Content-Type": "application/json"}
     payload = {"contents": [{"role": "user", "parts": [{"text": prompt}]}],
                "tools": [{"google_search": {}}],
                "generationConfig": {"temperature": 0.7}}
-    last_error = None
-    for attempt in range(3):
-        try:
-            response = requests.post(url, headers=headers, json=payload, timeout=120)
-            response.raise_for_status()
-            body = response.json()
-            raw = body["candidates"][0]["content"]["parts"][0]["text"]
-            items = _extract_json(raw)
-            if not isinstance(items, list):
-                raise ValueError("Gemini output is not a JSON array")
-            accepted, seen = [], set(blocked)
-            for item in items:
-                if not isinstance(item, dict):
-                    continue
-                topic = re.sub(r"\s+", " ", str(item.get("topic", "")).strip())
-                normalized_topic = " ".join(topic.split()).casefold()
-                category = str(item.get("category", "other")).strip().lower()
-                hooks, hook = item.get("hook_alternatives"), str(item.get("selected_hook", "")).strip()
-                facts, images = item.get("facts"), item.get("image_queries")
-                sources, uncertain = item.get("sources"), item.get("uncertain_claims")
-                if (not topic or normalized_topic in seen or category not in CATEGORIES
-                    or not isinstance(hooks, list) or len(hooks) != 3
-                    or not all(isinstance(x, str) and x.strip() for x in hooks)
-                    or hook not in hooks or not isinstance(facts, list) or len(facts) != 3
-                    or not all(isinstance(x, str) and x.strip() for x in facts)
-                    or not isinstance(images, list) or len(images) != 4
-                    or not all(isinstance(x, str) and x.strip() for x in images)
-                    or not isinstance(sources, list) or not 2 <= len(sources) <= 6
-                    or not all(isinstance(x, str) and urlparse(x).scheme == "https" and urlparse(x).netloc for x in sources)
-                    or not isinstance(uncertain, list)):
-                    continue
-                clean = {"topic": topic, "category": category,
-                    "hook_alternatives": [x.strip() for x in hooks], "hook": hook,
-                    "facts": [x.strip() for x in facts],
-                    "image_queries": [x.strip() for x in images], "sources": sources,
-                    "uncertain_claims": [str(x).strip() for x in uncertain if str(x).strip()]}
-                clean["quality_score"] = _quality_score(clean)
-                if clean["quality_score"] < MIN_SCORE:
-                    print(f"  [Quality] Rejected {topic}: {clean['quality_score']} < {MIN_SCORE}")
-                    continue
-                accepted.append(clean)
-                seen.add(normalized_topic)
-                if len(accepted) >= count:
+    errors = []
+    for model in models:
+        url = f"{API_BASE}/{model}:generateContent"
+        print(f"  [Gemini] Trying model: {model}")
+        for attempt in range(2):
+            try:
+                response = requests.post(url, headers=headers, json=payload, timeout=120)
+                if response.status_code in (404, 429, 500, 502, 503, 504):
+                    detail = response.text[:1200]
+                    errors.append(f"{model}: HTTP {response.status_code}: {detail}")
+                    # Short backoff for a transient 429/5xx, then move to the next model.
+                    if attempt == 0 and response.status_code in (429, 500, 502, 503, 504):
+                        retry_after = response.headers.get("Retry-After", "")
+                        try:
+                            delay = min(max(int(retry_after), 2), 20) if retry_after else 5
+                        except ValueError:
+                            delay = 5
+                        print(f"  [Gemini] {model} returned {response.status_code}; retrying in {delay}s.")
+                        time.sleep(delay)
+                        continue
+                    print(f"  [Gemini] Falling back after {model} returned HTTP {response.status_code}.")
                     break
-            if len(accepted) != count:
-                raise ValueError(f"Only {len(accepted)} of {count} requested fresh scripts passed checks; refusing a partial batch")
-            return accepted
-        except Exception as exc:
-            last_error = exc
-            if attempt < 2:
-                time.sleep(2 ** attempt)
-    raise RuntimeError(f"Gemini generation failed after 3 attempts: {last_error}")
+                response.raise_for_status()
+                body = response.json()
+                raw = body["candidates"][0]["content"]["parts"][0]["text"]
+                items = _extract_json(raw)
+                if not isinstance(items, list):
+                    raise ValueError("Gemini output is not a JSON array")
+                accepted, seen = [], set(blocked)
+                for item in items:
+                    if not isinstance(item, dict):
+                        continue
+                    topic = re.sub(r"\\s+", " ", str(item.get("topic", "")).strip())
+                    normalized_topic = " ".join(topic.split()).casefold()
+                    category = str(item.get("category", "other")).strip().lower()
+                    hooks, hook = item.get("hook_alternatives"), str(item.get("selected_hook", "")).strip()
+                    facts, images = item.get("facts"), item.get("image_queries")
+                    sources, uncertain = item.get("sources"), item.get("uncertain_claims")
+                    if (not topic or normalized_topic in seen or category not in CATEGORIES
+                        or not isinstance(hooks, list) or len(hooks) != 3
+                        or not all(isinstance(x, str) and x.strip() for x in hooks)
+                        or hook not in hooks or not isinstance(facts, list) or len(facts) != 3
+                        or not all(isinstance(x, str) and x.strip() for x in facts)
+                        or not isinstance(images, list) or len(images) != 4
+                        or not all(isinstance(x, str) and x.strip() for x in images)
+                        or not isinstance(sources, list) or not 2 <= len(sources) <= 6
+                        or not all(isinstance(x, str) and urlparse(x).scheme == "https" and urlparse(x).netloc for x in sources)
+                        or not isinstance(uncertain, list)):
+                        continue
+                    clean = {"topic": topic, "category": category,
+                        "hook_alternatives": [x.strip() for x in hooks], "hook": hook,
+                        "facts": [x.strip() for x in facts],
+                        "image_queries": [x.strip() for x in images], "sources": sources,
+                        "uncertain_claims": [str(x).strip() for x in uncertain if str(x).strip()]}
+                    clean["quality_score"] = _quality_score(clean)
+                    if clean["quality_score"] < MIN_SCORE:
+                        print(f"  [Quality] Rejected {topic}: {clean['quality_score']} < {MIN_SCORE}")
+                        continue
+                    accepted.append(clean)
+                    seen.add(normalized_topic)
+                    if len(accepted) >= count:
+                        break
+                if len(accepted) != count:
+                    raise ValueError(f"Only {len(accepted)} of {count} requested fresh scripts passed checks; refusing a partial batch")
+                print(f"  [Gemini] Successfully generated scripts with {model}.")
+                return accepted
+            except requests.RequestException as exc:
+                errors.append(f"{model}: {exc}")
+                if attempt == 0:
+                    time.sleep(3)
+            except Exception as exc:
+                # Invalid output/quality is not fixed by switching models repeatedly.
+                errors.append(f"{model}: {exc}")
+                break
+    raise RuntimeError("All Gemini models failed. " + " | ".join(errors[-7:]))
 
 def append_fresh_scripts(existing_topics, count=BATCH_SIZE):
     # Read both filename spellings if present; topics in either bank are forbidden.

@@ -10,9 +10,9 @@ from pathlib import Path, PurePosixPath
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
-ROOT = Path(__file__).resolve().parents[1]
-ARCHIVE = ROOT / "input" / "final_24MB.zip"
-OUT = ROOT / "prepared-input"
+BASE = Path(__file__).resolve().parent
+ARCHIVE = BASE / "input" / "final_24MB.zip"
+OUT = BASE / "prepared-input"
 IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".gif", ".tif", ".tiff"}
 MAX_FILES = 5000
 MAX_UNCOMPRESSED = 500 * 1024 * 1024
@@ -35,7 +35,6 @@ def main() -> None:
     images_dir.mkdir(parents=True)
 
     records = []
-    total_size = 0
     with zipfile.ZipFile(ARCHIVE) as zf:
         members = [i for i in zf.infolist() if not i.is_dir()]
         if len(members) > MAX_FILES:

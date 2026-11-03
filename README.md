@@ -5,7 +5,7 @@ A GitHub Actions pipeline that selects unused scripts, creates narration, genera
 ## Pipeline
 
 1. **Script queue** — `main.py` selects the next unused entry from `script_bank.json`.
-2. **Fresh scripts** — when the bank has no unused scripts, `generate_scripts.py` asks Gemini (with Google Search grounding enabled) to research and create a new batch.
+2. **Daily fresh scripts** — on every scheduled or manual run, `main.py` asks Gemini (with Google Search grounding enabled) to generate a brand-new script for each video planned in that run. It never fills the day's quota from older queued scripts.
 3. **One-time use** — successful topics are permanently recorded in `state.json`. A topic is never selected again. A script that fails three times is retired rather than recycled.
 4. **Narration** — `audio.py` uses Edge-TTS, with gTTS as a fallback.
 5. **AI visuals** — anonymous OVHcloud SDXL is tried first; anonymous AI Horde is the fallback; a gradient is used only if both fail.
@@ -18,7 +18,7 @@ A GitHub Actions pipeline that selects unused scripts, creates narration, genera
 3. Add the secret named `GEMINI_API_KEY`.
 4. Optionally add a repository variable `GEMINI_MODEL`; default is `gemini-2.5-flash`.
 
-Gemini is called only when there are no unused scripts left in `script_bank.json`. It generates a batch of 10 at a time. Generated scripts are committed back to the repository along with usage state, so future runs continue from the saved queue rather than generating the same batch again.
+Gemini is called on every scheduled or manual run and generates exactly the number of fresh scripts needed for that run (five by default). Existing unused entries are not recycled to fill a day's quota. New scripts and usage history are committed back to the repository. If Gemini generation fails, the workflow stops rather than silently reusing older scripts.
 
 ## Image generation providers
 
@@ -56,7 +56,7 @@ The workflow creates up to 5 videos per scheduled run (configurable with `VIDEOS
 - Three hook alternatives with Gemini selecting the strongest; curiosity-gap and payoff structure.
 - Exactly three concise narration facts and four visual prompts per script.
 - Gemini JSON/schema validation, research source URLs, uncertainty flags, category diversity and quality scoring.
-- Batch generation (10 scripts) to reduce repeated API calls.
+- Daily generation: Gemini creates a new script for every planned video on each run.
 - Permanent consumed-topic history; no automatic queue reset.
 - Failed topics are retired after three attempts to prevent endless repeats.
 - Atomic writes for the script bank and state file.

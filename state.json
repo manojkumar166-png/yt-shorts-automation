@@ -10,7 +10,12 @@
     "Bi Sheng and the First Movable Type",
     "Quantum Tunneling in Modern Transistors",
     "The Piri Reis Map Mystery",
-    "The Great Red Spot: Jupiter’s Ancient Storm"
+    "The Great Red Spot: Jupiter’s Ancient Storm",
+    "Monarch Butterfly Migration",
+    "The Rise of the Sumerian City-States",
+    "Mechanics of the Human Brain's Memory Retrieval",
+    "Evolution of the Electric Car",
+    "Mystery of the Voynich Manuscript"
   ],
   "failed": {
     "Why Venus spins backward": 1,
@@ -231,6 +236,36 @@
       "topic": "The Great Red Spot: Jupiter’s Ancient Storm",
       "date": "2026-11-03",
       "category": "space",
+      "quality_score": 100
+    },
+    {
+      "topic": "Monarch Butterfly Migration",
+      "date": "2026-11-05",
+      "category": "nature",
+      "quality_score": 100
+    },
+    {
+      "topic": "The Rise of the Sumerian City-States",
+      "date": "2026-11-05",
+      "category": "history",
+      "quality_score": 100
+    },
+    {
+      "topic": "Mechanics of the Human Brain's Memory Retrieval",
+      "date": "2026-11-05",
+      "category": "science",
+      "quality_score": 100
+    },
+    {
+      "topic": "Evolution of the Electric Car",
+      "date": "2026-11-05",
+      "category": "technology",
+      "quality_score": 100
+    },
+    {
+      "topic": "Mystery of the Voynich Manuscript",
+      "date": "2026-11-05",
+      "category": "mystery",
       "quality_score": 100
     }
   ]

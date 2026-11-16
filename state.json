@@ -15,7 +15,12 @@
     "The Rise of the Sumerian City-States",
     "Mechanics of the Human Brain's Memory Retrieval",
     "Evolution of the Electric Car",
-    "Mystery of the Voynich Manuscript"
+    "Mystery of the Voynich Manuscript",
+    "The Silent Language of Bats' Echolocation",
+    "Ancient Ice Age Megaliths of the Arctic",
+    "The Quantum Secrets of the Greenhouse Effect",
+    "The Magnetic Field of Earth's Core: A Deep Dive",
+    "The Unseen Kingdom of the Sea Anemone"
   ],
   "failed": {
     "Why Venus spins backward": 1,
@@ -266,6 +271,36 @@
       "topic": "Mystery of the Voynich Manuscript",
       "date": "2026-11-05",
       "category": "mystery",
+      "quality_score": 100
+    },
+    {
+      "topic": "The Silent Language of Bats' Echolocation",
+      "date": "2026-11-16",
+      "category": "science",
+      "quality_score": 100
+    },
+    {
+      "topic": "Ancient Ice Age Megaliths of the Arctic",
+      "date": "2026-11-16",
+      "category": "history",
+      "quality_score": 100
+    },
+    {
+      "topic": "The Quantum Secrets of the Greenhouse Effect",
+      "date": "2026-11-16",
+      "category": "technology",
+      "quality_score": 100
+    },
+    {
+      "topic": "The Magnetic Field of Earth's Core: A Deep Dive",
+      "date": "2026-11-16",
+      "category": "science",
+      "quality_score": 100
+    },
+    {
+      "topic": "The Unseen Kingdom of the Sea Anemone",
+      "date": "2026-11-16",
+      "category": "animals",
       "quality_score": 100
     }
   ]

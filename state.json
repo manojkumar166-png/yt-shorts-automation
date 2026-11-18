@@ -20,7 +20,12 @@
     "Ancient Ice Age Megaliths of the Arctic",
     "The Quantum Secrets of the Greenhouse Effect",
     "The Magnetic Field of Earth's Core: A Deep Dive",
-    "The Unseen Kingdom of the Sea Anemone"
+    "The Unseen Kingdom of the Sea Anemone",
+    "The Deep Sea Hydrothermal Vents",
+    "The Voyages of the HMS Beagle",
+    "The Invention of the Lattice Boltzmann Method",
+    "Origins of the Great Barrier Reef",
+    "Mystery of the Lost Colony of Roanoke"
   ],
   "failed": {
     "Why Venus spins backward": 1,
@@ -302,6 +307,36 @@
       "date": "2026-11-16",
       "category": "animals",
       "quality_score": 100
+    },
+    {
+      "topic": "The Deep Sea Hydrothermal Vents",
+      "date": "2026-11-18",
+      "category": "science",
+      "quality_score": 85
+    },
+    {
+      "topic": "The Voyages of the HMS Beagle",
+      "date": "2026-11-18",
+      "category": "history",
+      "quality_score": 85
+    },
+    {
+      "topic": "The Invention of the Lattice Boltzmann Method",
+      "date": "2026-11-18",
+      "category": "technology",
+      "quality_score": 85
+    },
+    {
+      "topic": "Origins of the Great Barrier Reef",
+      "date": "2026-11-18",
+      "category": "nature",
+      "quality_score": 85
+    },
+    {
+      "topic": "Mystery of the Lost Colony of Roanoke",
+      "date": "2026-11-18",
+      "category": "mystery",
+      "quality_score": 75
     }
   ]
 }

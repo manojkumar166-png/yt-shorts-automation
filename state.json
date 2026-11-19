@@ -25,7 +25,12 @@
     "The Voyages of the HMS Beagle",
     "The Invention of the Lattice Boltzmann Method",
     "Origins of the Great Barrier Reef",
-    "Mystery of the Lost Colony of Roanoke"
+    "Mystery of the Lost Colony of Roanoke",
+    "Hidden Underground Water Reservoirs in the Sahara",
+    "The Sony Walkman: Portable Music Revolution",
+    "Urban Fungi as Natural Air Cleaners",
+    "The Mystery of the Bloop Sound",
+    "Intelsat 1: The First Commercial Satellite’s Dramatic Reentry"
   ],
   "failed": {
     "Why Venus spins backward": 1,
@@ -337,6 +342,36 @@
       "date": "2026-11-18",
       "category": "mystery",
       "quality_score": 75
+    },
+    {
+      "topic": "Hidden Underground Water Reservoirs in the Sahara",
+      "date": "2026-11-19",
+      "category": "nature",
+      "quality_score": 100
+    },
+    {
+      "topic": "The Sony Walkman: Portable Music Revolution",
+      "date": "2026-11-19",
+      "category": "technology",
+      "quality_score": 100
+    },
+    {
+      "topic": "Urban Fungi as Natural Air Cleaners",
+      "date": "2026-11-19",
+      "category": "science",
+      "quality_score": 100
+    },
+    {
+      "topic": "The Mystery of the Bloop Sound",
+      "date": "2026-11-19",
+      "category": "mystery",
+      "quality_score": 100
+    },
+    {
+      "topic": "Intelsat 1: The First Commercial Satellite’s Dramatic Reentry",
+      "date": "2026-11-19",
+      "category": "technology",
+      "quality_score": 100
     }
   ]
 }
